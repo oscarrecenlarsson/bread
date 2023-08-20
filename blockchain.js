@@ -34,25 +34,24 @@ Blockchain.prototype.getLastBlock = function () {
   return this.chain.at(-1);
 };
 
-// Funktion för att lägga till data i pendingList...
-Blockchain.prototype.addTransaction = function (amount, sender, recipient) {
-  const transaction = {
-    amount,
-    sender,
-    recipient,
-    transactionId: uuidv4().split("-").join(""),
+Blockchain.prototype.createShipment = function (route, products) {
+  const shipment = {
+    shipmentId: uuidv4().split("-").join(""),
+    currentTime: new Date().toString(),
+    route,
+    sender: route[0],
+    currentLocation: route[0],
+    destination: route[route.length - 1],
+    delivered: false,
+    products,
   };
 
-  // this.pendingList.push(data);
-
-  // return this.getLastBlock()["index"] + 1;
-
-  return transaction;
+  return shipment;
 };
 
 //funktion som adderar en transaktion till pendinglist
-Blockchain.prototype.addTransactionToPendingList = function (transaction) {
-  this.pendingList.push(transaction);
+Blockchain.prototype.addShipmentToPendingList = function (shipment) {
+  this.pendingList.push(shipment);
   return this.getLastBlock()["index"] + 1;
 };
 
