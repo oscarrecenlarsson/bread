@@ -56,7 +56,9 @@ app.post("/api/node/shipment", (req, res) => {
 app.post("/api/node/shipments/shipment/:id", (req, res) => {
   const id = req.params["id"];
 
-  res.status(201).json({ success: true, data: id });
+  // const shipment = app.get(samma url)
+  // logbc.sendToNext(shipment)
+  const shipment = res.status(201).json({ success: true, data: id });
 });
 
 app.get("/api/mine", async (req, res) => {
