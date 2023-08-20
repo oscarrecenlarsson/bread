@@ -79,8 +79,6 @@ app.patch("/api/network/shipment", (req, res) => {
   //anropa api/transaction för alla network nodes
 
   logisticsBC.networkNodes.forEach(async (url) => {
-    // const body = { transaction: transaction };
-
     await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
@@ -105,26 +103,15 @@ app.post("/api/node/shipments/shipment/:id", async (req, res) => {
 
   const shipment = response.data.data;
 
-  // logbc.sendToNext(shipment)
-
   logisticsBC.removeShipmentFromProcessAndSend(shipment);
 
   const updatedShipment = logisticsBC.updateShipment(shipment);
 
   const url = updatedShipment.currentLocation;
 
-  // console.log("url", url);
-
-  // // const testUrl = "http://localhost:3001/";
-  // const testUrl = logisticsBC.networkNodes[0];
-
   await axios.patch(`${url}/api/network/shipment`, {
     updatedShipment: updatedShipment,
   });
-
-  //add to processAndSend at next node
-
-  //remake shipment create at next node???
 
   res.status(201).json({ success: true, data: updatedShipment });
 });
