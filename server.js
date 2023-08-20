@@ -20,9 +20,8 @@ app.get("/api/blockchain", (req, res) => {
 app.post("/api/network/shipment", (req, res) => {
   //skapa en ny transaction på aktuell node
   const shipment = logisticsBC.createShipment(
-    req.body.amount,
-    req.body.sender,
-    req.body.recipient
+    req.body.route,
+    req.body.products
   );
   //Lägg till nya transaktioner till aktuell node
   logisticsBC.addShipmentToPendingList(shipment);
@@ -72,11 +71,12 @@ app.get("/api/mine", async (req, res) => {
     await axios.post(`${url}/api/block`, { block: block });
   });
 
-  await axios.post(`${logisticsBC.nodeUrl}/api/network/shipment`, {
-    amount: 6.25,
-    sender: "00",
-    recipient: nodeAddress,
-  });
+  // no mining reward required
+  // await axios.post(`${logisticsBC.nodeUrl}/api/network/shipment`, {
+  //   amount: 6.25,
+  //   sender: "00",
+  //   recipient: nodeAddress,
+  // });
 
   res.status(200).json({
     success: true,

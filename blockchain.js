@@ -34,12 +34,16 @@ Blockchain.prototype.getLastBlock = function () {
   return this.chain.at(-1);
 };
 
-Blockchain.prototype.createShipment = function (amount, sender, recipient) {
+Blockchain.prototype.createShipment = function (route, products) {
   const shipment = {
-    amount,
-    sender,
-    recipient,
     shipmentId: uuidv4().split("-").join(""),
+    currentTime: new Date().toString(),
+    route,
+    sender: route[0],
+    currentLocation: route[0],
+    destination: route[route.length - 1],
+    delivered: false,
+    products,
   };
 
   return shipment;
