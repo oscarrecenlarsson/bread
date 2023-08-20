@@ -51,6 +51,12 @@ app.post("/api/node/shipment", (req, res) => {
   res.status(201).json({ success: true, data: index });
 });
 
+app.post("/api/node/shipments/shipment/:id", (req, res) => {
+  const id = req.params["id"];
+
+  res.status(201).json({ success: true, data: id });
+});
+
 app.get("/api/mine", async (req, res) => {
   const previousBlock = logisticsBC.getLastBlock();
   const previousHash = previousBlock.hash;
