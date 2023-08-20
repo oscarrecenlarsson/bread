@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 function Blockchain() {
   this.chain = [];
   this.pendingList = [];
+  this.processAndSend = [];
+  this.finalized = [];
   this.nodeUrl = process.argv[3];
   this.networkNodes = [];
 
@@ -49,10 +51,55 @@ Blockchain.prototype.createShipment = function (route, products) {
   return shipment;
 };
 
+Blockchain.prototype.updateShipment = function (shipment) {
+  let finalized = false;
+
+  if (
+    shipment.route[shipment.route.indexOf(shipment.currentLocation) + 1] ===
+    shipment.destination
+  ) {
+    finalized = true;
+  }
+
+  const updatedShipment = {
+    shipmentId: shipment.shipmentId,
+    currentTime: new Date().toString(),
+    route: shipment.route,
+    sender: shipment.sender,
+    currentLocation:
+      shipment.route[shipment.route.indexOf(shipment.currentLocation) + 1],
+    destination: shipment.destination,
+    delivered: finalized,
+    products: shipment.products,
+  };
+
+  return updatedShipment;
+};
+// Blockchain.prototype.sendShipment = function (shipment) {
+//   // ta bort shipment från this.processAndSend
+// }
+
 //funktion som adderar en transaktion till pendinglist
 Blockchain.prototype.addShipmentToPendingList = function (shipment) {
   this.pendingList.push(shipment);
   return this.getLastBlock()["index"] + 1;
+};
+
+Blockchain.prototype.addShipmentToProcessAndSend = function (shipment) {
+  this.processAndSend.push(shipment);
+};
+
+// Blockchain.prototype.addShipmentToProcessAndSendAtNextNode = function (shipment) {
+//   this.processAndSend.push(shipment);
+// };
+
+Blockchain.prototype.removeShipmentFromProcessAndSend = function (shipment) {
+  const index = this.processAndSend.indexOf(shipment);
+  this.processAndSend.splice(index, 1);
+};
+
+Blockchain.prototype.addShipmentToFinalized = function (shipment) {
+  this.finalized.push(shipment);
 };
 
 // Skapa ett hash värde...
