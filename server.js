@@ -19,6 +19,7 @@ app.get("/api/blockchain", (req, res) => {
 
 app.post("/api/network/shipment", (req, res) => {
   //skapa en ny transaction på aktuell node
+  //behöver jag göra om denna för att det ska fungera med "move"????
   const shipment = logisticsBC.createShipment(
     req.body.route,
     req.body.products
@@ -65,7 +66,13 @@ app.post("/api/node/shipments/shipment/:id", async (req, res) => {
 
   logisticsBC.removeShipmentFromProcessAndSend(shipment);
 
-  res.status(201).json({ success: true, data: shipment });
+  const updatedShipment = logisticsBC.updateShipment(shipment);
+
+  //add to processAndSend at next node
+
+  //remake shipment create at next node???
+
+  res.status(201).json({ success: true, data: updatedShipment });
 });
 
 app.get("/api/node/shipments/shipment/:id", (req, res) => {
