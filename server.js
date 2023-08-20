@@ -105,10 +105,14 @@ app.post("/api/node/shipments/shipment/:id", async (req, res) => {
 
   const updatedShipment = logisticsBC.updateShipment(shipment);
 
+  const url = updatedShipment.currentLocation;
+
+  console.log("url", url);
+
   // const testUrl = "http://localhost:3001/";
   const testUrl = logisticsBC.networkNodes[0];
 
-  await axios.patch(`${testUrl}/api/network/shipment`, {
+  await axios.patch(`${url}/api/network/shipment`, {
     updatedShipment: updatedShipment,
   });
 
