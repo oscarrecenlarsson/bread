@@ -58,12 +58,13 @@ app.post("/api/node/shipments/shipment/:id", async (req, res) => {
   const response = await axios.get(
     `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
   );
-  console.log("response", response.data.data);
+
   const shipment = response.data.data;
 
-  console.log("shipment", shipment);
-  // const shipment = app.get(samma url)
   // logbc.sendToNext(shipment)
+
+  logisticsBC.removeShipmentFromProcessAndSend(shipment);
+
   res.status(201).json({ success: true, data: shipment });
 });
 

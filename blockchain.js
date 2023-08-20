@@ -51,6 +51,10 @@ Blockchain.prototype.createShipment = function (route, products) {
   return shipment;
 };
 
+// Blockchain.prototype.sendShipment = function (shipment) {
+//   // ta bort shipment från this.processAndSend
+// }
+
 //funktion som adderar en transaktion till pendinglist
 Blockchain.prototype.addShipmentToPendingList = function (shipment) {
   this.pendingList.push(shipment);
@@ -59,6 +63,11 @@ Blockchain.prototype.addShipmentToPendingList = function (shipment) {
 
 Blockchain.prototype.addShipmentToProcessAndSend = function (shipment) {
   this.processAndSend.push(shipment);
+};
+
+Blockchain.prototype.removeShipmentFromProcessAndSend = function (shipment) {
+  const index = this.processAndSend.indexOf(shipment);
+  this.processAndSend.splice(index, 1);
 };
 
 Blockchain.prototype.addShipmentToFinalized = function (shipment) {
