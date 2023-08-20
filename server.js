@@ -5,7 +5,7 @@ const Blockchain = require("./blockchain");
 const { default: axios } = require("axios");
 const app = express();
 
-const softCoin = new Blockchain();
+const logisticsBC = new Blockchain();
 
 const PORT = process.argv[2];
 const nodeAddress = uuidv4().split("-").join("");
@@ -14,18 +14,18 @@ const nodeAddress = uuidv4().split("-").join("");
 app.use(express.json());
 
 app.get("/api/blockchain", (req, res) => {
-  res.status(200).json(softCoin);
+  res.status(200).json(logisticsBC);
 });
 
 app.post("/api/transaction/broadcast", (req, res) => {
   //skapa en ny transaction på aktuell node
-  const transaction = softCoin.addTransaction(
+  const transaction = logisticsBC.addTransaction(
     req.body.amount,
     req.body.sender,
     req.body.recipient
   );
   //Lägg till nya transaktioner till aktuell node
-  softCoin.addTransactionToPendingList(transaction);
+  logisticsBC.addTransactionToPendingList(transaction);
 
   //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
   // behöver vi använda axios för att göra ett post anrop
@@ -33,7 +33,7 @@ app.post("/api/transaction/broadcast", (req, res) => {
 
   //anropa api/transaction för alla network nodes
 
-  softCoin.networkNodes.forEach(async (url) => {
+  logisticsBC.networkNodes.forEach(async (url) => {
     // const body = { transaction: transaction };
 
     await axios.post(`${url}/api/transaction`, transaction);
@@ -47,31 +47,31 @@ app.post("/api/transaction/broadcast", (req, res) => {
 app.post("/api/transaction", (req, res) => {
   //hämta ut transatktionsobjektet ifrån body i request objektet
   const transaction = req.body;
-  const index = softCoin.addTransactionToPendingList(transaction);
+  const index = logisticsBC.addTransactionToPendingList(transaction);
   res.status(201).json({ success: true, data: index });
 });
 
 app.get("/api/mine", async (req, res) => {
-  const previousBlock = softCoin.getLastBlock();
+  const previousBlock = logisticsBC.getLastBlock();
   const previousHash = previousBlock.hash;
   const data = {
-    data: softCoin.pendingList,
+    data: logisticsBC.pendingList,
     index: previousBlock.index + 1,
   };
-  const nonce = softCoin.proofOfWork(previousHash, data);
-  const hash = softCoin.createHash(previousHash, data, nonce);
+  const nonce = logisticsBC.proofOfWork(previousHash, data);
+  const hash = logisticsBC.createHash(previousHash, data, nonce);
 
-  // softCoin.addTransaction(6.25, "00", nodeAddress);
+  // logisticsBC.addTransaction(6.25, "00", nodeAddress);
 
-  const block = softCoin.createBlock(nonce, previousHash, hash);
+  const block = logisticsBC.createBlock(nonce, previousHash, hash);
 
-  softCoin.networkNodes.forEach(async (url) => {
+  logisticsBC.networkNodes.forEach(async (url) => {
     // anropa en endpoint vi ska kalla api/block som tar argument i body vårt nya block
 
     await axios.post(`${url}/api/block`, { block: block });
   });
 
-  await axios.post(`${softCoin.nodeUrl}/api/transaction/broadcast`, {
+  await axios.post(`${logisticsBC.nodeUrl}/api/transaction/broadcast`, {
     amount: 6.25,
     sender: "00",
     recipient: nodeAddress,
@@ -85,13 +85,13 @@ app.get("/api/mine", async (req, res) => {
 
 app.post("/api/block", (req, res) => {
   const block = req.body.block;
-  const lastBlock = softCoin.getLastBlock();
+  const lastBlock = logisticsBC.getLastBlock();
   const hashIsCorrect = lastBlock.hash === block.previousHash;
   const hasCorrectIndex = lastBlock.index + 1 === block.index;
 
   if (hashIsCorrect && hasCorrectIndex) {
-    softCoin.chain.push(block);
-    softCoin.pendingList = [];
+    logisticsBC.chain.push(block);
+    logisticsBC.pendingList = [];
 
     res.status(201).json({ success: true, data: block });
   } else {
@@ -112,18 +112,18 @@ app.post("/api/network/node", async (req, res) => {
   // 1. Placera nya noden i aktuell nodes networkNodes lista...
   const urlToAdd = req.body.nodeUrl;
 
-  if (softCoin.networkNodes.indexOf(urlToAdd) === -1) {
-    softCoin.networkNodes.push(urlToAdd);
+  if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
+    logisticsBC.networkNodes.push(urlToAdd);
   }
   // 2. Iterera igenom vår networkNodes lista och skicka till varje node
   // i listan samma nya node
-  softCoin.networkNodes.forEach(async (url) => {
+  logisticsBC.networkNodes.forEach(async (url) => {
     const body = { nodeUrl: urlToAdd };
 
     await axios.post(`${url}/api/node/node`, body);
   });
   // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
-  const body = { nodes: [...softCoin.networkNodes, softCoin.nodeUrl] };
+  const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
 
   await axios.post(`${urlToAdd}/api/node/nodes`, body);
 
@@ -136,8 +136,11 @@ app.post("/api/node/node", (req, res) => {
   const url = req.body.nodeUrl; //http://localhost:3001
   // Kontrollera att vi inte redan har registrerat denna URL...
   // Om inte registrera, dvs placera noden i vår networkNode lista...
-  if (softCoin.networkNodes.indexOf(url) === -1 && softCoin.nodeUrl !== url) {
-    softCoin.networkNodes.push(url);
+  if (
+    logisticsBC.networkNodes.indexOf(url) === -1 &&
+    logisticsBC.nodeUrl !== url
+  ) {
+    logisticsBC.networkNodes.push(url);
   }
 
   res.status(201).json({ success: true, data: "Ny nod tillagd" });
@@ -148,8 +151,11 @@ app.post("/api/node/nodes", (req, res) => {
   const allNodes = req.body.nodes;
 
   allNodes.forEach((url) => {
-    if (softCoin.networkNodes.indexOf(url) === -1 && softCoin.nodeUrl !== url) {
-      softCoin.networkNodes.push(url);
+    if (
+      logisticsBC.networkNodes.indexOf(url) === -1 &&
+      logisticsBC.nodeUrl !== url
+    ) {
+      logisticsBC.networkNodes.push(url);
     }
   });
 
