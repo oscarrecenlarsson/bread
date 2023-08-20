@@ -36,7 +36,7 @@ app.post("/api/network/shipment", (req, res) => {
   logisticsBC.networkNodes.forEach(async (url) => {
     // const body = { transaction: transaction };
 
-    await axios.post(`${url}/api/transaction`, shipment);
+    await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
   res.status(201).json({
@@ -45,10 +45,10 @@ app.post("/api/network/shipment", (req, res) => {
   });
 });
 
-app.post("/api/transaction", (req, res) => {
+app.post("/api/node/shipment", (req, res) => {
   //hämta ut transatktionsobjektet ifrån body i request objektet
-  const transaction = req.body;
-  const index = logisticsBC.addTransactionToPendingList(transaction);
+  const shipment = req.body;
+  const index = logisticsBC.addTransactionToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 });
 
