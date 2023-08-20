@@ -8,7 +8,7 @@ const app = express();
 const logisticsBC = new Blockchain();
 
 const PORT = process.argv[2];
-const nodeAddress = uuidv4().split("-").join("");
+// const nodeAddress = uuidv4().split("-").join(""); //mining
 
 // Middleware...
 app.use(express.json());
@@ -134,7 +134,7 @@ app.get("/api/mine", async (req, res) => {
   const nonce = logisticsBC.proofOfWork(previousHash, data);
   const hash = logisticsBC.createHash(previousHash, data, nonce);
 
-  // logisticsBC.addTransaction(6.25, "00", nodeAddress);
+  // logisticsBC.addTransaction(6.25, "00", nodeAddress); //mining
 
   const block = logisticsBC.createBlock(nonce, previousHash, hash);
 
