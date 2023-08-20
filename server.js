@@ -19,13 +19,13 @@ app.get("/api/blockchain", (req, res) => {
 
 app.post("/api/transaction/broadcast", (req, res) => {
   //skapa en ny transaction på aktuell node
-  const transaction = logisticsBC.createShipment(
+  const shipment = logisticsBC.createShipment(
     req.body.amount,
     req.body.sender,
     req.body.recipient
   );
   //Lägg till nya transaktioner till aktuell node
-  logisticsBC.addTransactionToPendingList(transaction);
+  logisticsBC.addTransactionToPendingList(shipment);
 
   //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
   // behöver vi använda axios för att göra ett post anrop
@@ -36,12 +36,13 @@ app.post("/api/transaction/broadcast", (req, res) => {
   logisticsBC.networkNodes.forEach(async (url) => {
     // const body = { transaction: transaction };
 
-    await axios.post(`${url}/api/transaction`, transaction);
+    await axios.post(`${url}/api/transaction`, shipment);
   });
 
-  res
-    .status(201)
-    .json({ sucess: true, data: "transaktion är skapad och uppdaterad" });
+  res.status(201).json({
+    sucess: true,
+    data: "shipment has been created and broadcasted to the network",
+  });
 });
 
 app.post("/api/transaction", (req, res) => {
