@@ -25,7 +25,7 @@ app.post("/api/network/shipment", (req, res) => {
     req.body.recipient
   );
   //Lägg till nya transaktioner till aktuell node
-  logisticsBC.addTransactionToPendingList(shipment);
+  logisticsBC.addShipmentToPendingList(shipment);
 
   //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
   // behöver vi använda axios för att göra ett post anrop
@@ -48,7 +48,7 @@ app.post("/api/network/shipment", (req, res) => {
 app.post("/api/node/shipment", (req, res) => {
   //hämta ut transatktionsobjektet ifrån body i request objektet
   const shipment = req.body;
-  const index = logisticsBC.addTransactionToPendingList(shipment);
+  const index = logisticsBC.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 });
 

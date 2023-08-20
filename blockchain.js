@@ -46,8 +46,8 @@ Blockchain.prototype.createShipment = function (amount, sender, recipient) {
 };
 
 //funktion som adderar en transaktion till pendinglist
-Blockchain.prototype.addTransactionToPendingList = function (transaction) {
-  this.pendingList.push(transaction);
+Blockchain.prototype.addShipmentToPendingList = function (shipment) {
+  this.pendingList.push(shipment);
   return this.getLastBlock()["index"] + 1;
 };
 
