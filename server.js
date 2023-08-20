@@ -19,7 +19,7 @@ app.get("/api/blockchain", (req, res) => {
 
 app.post("/api/transaction/broadcast", (req, res) => {
   //skapa en ny transaction på aktuell node
-  const transaction = logisticsBC.addTransaction(
+  const transaction = logisticsBC.createShipment(
     req.body.amount,
     req.body.sender,
     req.body.recipient
