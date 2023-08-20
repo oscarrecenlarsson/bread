@@ -124,7 +124,7 @@ app.get("/api/node/shipments/shipment/:id", (req, res) => {
   res.status(201).json({ success: true, data: shipment });
 });
 
-app.get("/api/mine", async (req, res) => {
+app.get("/api/network/block", async (req, res) => {
   const previousBlock = logisticsBC.getLastBlock();
   const previousHash = previousBlock.hash;
   const data = {
@@ -141,7 +141,7 @@ app.get("/api/mine", async (req, res) => {
   logisticsBC.networkNodes.forEach(async (url) => {
     // anropa en endpoint vi ska kalla api/block som tar argument i body vårt nya block
 
-    await axios.post(`${url}/api/block`, { block: block });
+    await axios.post(`${url}/api/node/block`, { block: block });
   });
 
   // no mining reward required
@@ -157,7 +157,7 @@ app.get("/api/mine", async (req, res) => {
   });
 });
 
-app.post("/api/block", (req, res) => {
+app.post("/api/node/block", (req, res) => {
   const block = req.body.block;
   const lastBlock = logisticsBC.getLastBlock();
   const hashIsCorrect = lastBlock.hash === block.previousHash;
