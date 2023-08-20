@@ -17,7 +17,7 @@ app.get("/api/blockchain", (req, res) => {
   res.status(200).json(logisticsBC);
 });
 
-app.post("/api/transaction/broadcast", (req, res) => {
+app.post("/api/network/shipment", (req, res) => {
   //skapa en ny transaction på aktuell node
   const shipment = logisticsBC.createShipment(
     req.body.amount,
@@ -72,7 +72,7 @@ app.get("/api/mine", async (req, res) => {
     await axios.post(`${url}/api/block`, { block: block });
   });
 
-  await axios.post(`${logisticsBC.nodeUrl}/api/transaction/broadcast`, {
+  await axios.post(`${logisticsBC.nodeUrl}/api/network/shipment`, {
     amount: 6.25,
     sender: "00",
     recipient: nodeAddress,
