@@ -107,8 +107,8 @@ app.post("/api/block", (req, res) => {
 /* Administrativa endpoints... */
 /* ----------------------------------------------------------------------------------------- */
 
-// Registrera och skicka ut nya noder till alla noder i det befintliga nätverket...
-app.post("/api/register-broadcast-node", async (req, res) => {
+// Add a new node to the network...
+app.post("/api/network/node", async (req, res) => {
   // 1. Placera nya noden i aktuell nodes networkNodes lista...
   const urlToAdd = req.body.nodeUrl;
 
@@ -120,18 +120,18 @@ app.post("/api/register-broadcast-node", async (req, res) => {
   softCoin.networkNodes.forEach(async (url) => {
     const body = { nodeUrl: urlToAdd };
 
-    await axios.post(`${url}/api/register-node`, body);
+    await axios.post(`${url}/api/node/node`, body);
   });
   // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
   const body = { nodes: [...softCoin.networkNodes, softCoin.nodeUrl] };
 
-  await axios.post(`${urlToAdd}/api/register-nodes`, body);
+  await axios.post(`${urlToAdd}/api/node/nodes`, body);
 
   res.status(201).json({ success: true, data: "Ny nod tillagd i nätverket." });
 });
 
 // Registrera enskild node
-app.post("/api/register-node", (req, res) => {
+app.post("/api/node/node", (req, res) => {
   // Få in en nodes unika adress(URL)...
   const url = req.body.nodeUrl; //http://localhost:3001
   // Kontrollera att vi inte redan har registrerat denna URL...
@@ -144,7 +144,7 @@ app.post("/api/register-node", (req, res) => {
 });
 
 // Registrera en lista med noder...
-app.post("/api/register-nodes", (req, res) => {
+app.post("/api/node/nodes", (req, res) => {
   const allNodes = req.body.nodes;
 
   allNodes.forEach((url) => {
