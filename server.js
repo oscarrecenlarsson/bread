@@ -53,12 +53,26 @@ app.post("/api/node/shipment", (req, res) => {
   res.status(201).json({ success: true, data: index });
 });
 
-app.post("/api/node/shipments/shipment/:id", (req, res) => {
+app.post("/api/node/shipments/shipment/:id", async (req, res) => {
   const id = req.params["id"];
+  const response = await axios.get(
+    `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
+  );
+  console.log("response", response.data.data);
+  const shipment = response.data.data;
 
+  console.log("shipment", shipment);
   // const shipment = app.get(samma url)
   // logbc.sendToNext(shipment)
-  const shipment = res.status(201).json({ success: true, data: id });
+  res.status(201).json({ success: true, data: shipment });
+});
+
+app.get("/api/node/shipments/shipment/:id", (req, res) => {
+  const id = req.params["id"];
+  const shipment = logisticsBC.processAndSend.find(
+    (shipment) => shipment.shipmentId === id
+  );
+  res.status(201).json({ success: true, data: shipment });
 });
 
 app.get("/api/mine", async (req, res) => {
