@@ -22,7 +22,7 @@ app.post("/api/network/shipment", (req, res) => {
   //behöver jag göra om denna för att det ska fungera med "move"????
 
   //if body har ett helt shipmentobject sett shipment till det annars skapa en ny shipment:
-  console.log(req.body);
+  // console.log(req.body);
 
   const shipment = logisticsBC.createShipment(
     req.body.route,
@@ -57,14 +57,20 @@ app.patch("/api/network/shipment", (req, res) => {
   //behöver jag göra om denna för att det ska fungera med "move"????
 
   //if body har ett helt shipmentobject sett shipment till det annars skapa en ny shipment:
-  console.log("body", req.body);
+  // console.log("body", req.body);
 
   const shipment = req.body.updatedShipment;
 
   //Lägg till nya transaktioner till aktuell node
   logisticsBC.addShipmentToPendingList(shipment);
 
-  logisticsBC.addShipmentToProcessAndSend(shipment);
+  console.log("updated shipment", shipment.delivered);
+
+  if (!shipment.delivered) {
+    logisticsBC.addShipmentToProcessAndSend(shipment);
+  } else {
+    logisticsBC.addShipmentToFinalized(shipment);
+  }
 
   //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
   // behöver vi använda axios för att göra ett post anrop
@@ -107,10 +113,10 @@ app.post("/api/node/shipments/shipment/:id", async (req, res) => {
 
   const url = updatedShipment.currentLocation;
 
-  console.log("url", url);
+  // console.log("url", url);
 
-  // const testUrl = "http://localhost:3001/";
-  const testUrl = logisticsBC.networkNodes[0];
+  // // const testUrl = "http://localhost:3001/";
+  // const testUrl = logisticsBC.networkNodes[0];
 
   await axios.patch(`${url}/api/network/shipment`, {
     updatedShipment: updatedShipment,
