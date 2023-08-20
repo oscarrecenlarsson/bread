@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 function Blockchain() {
   this.chain = [];
   this.pendingList = [];
+  this.processAndSend = [];
+  this.finalized = [];
   this.nodeUrl = process.argv[3];
   this.networkNodes = [];
 
@@ -53,6 +55,14 @@ Blockchain.prototype.createShipment = function (route, products) {
 Blockchain.prototype.addShipmentToPendingList = function (shipment) {
   this.pendingList.push(shipment);
   return this.getLastBlock()["index"] + 1;
+};
+
+Blockchain.prototype.addShipmentToProcessAndSend = function (shipment) {
+  this.processAndSend.push(shipment);
+};
+
+Blockchain.prototype.addShipmentToFinalized = function (shipment) {
+  this.finalized.push(shipment);
 };
 
 // Skapa ett hash värde...

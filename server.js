@@ -26,6 +26,8 @@ app.post("/api/network/shipment", (req, res) => {
   //Lägg till nya transaktioner till aktuell node
   logisticsBC.addShipmentToPendingList(shipment);
 
+  logisticsBC.addShipmentToProcessAndSend(shipment);
+
   //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
   // behöver vi använda axios för att göra ett post anrop
   //await axios.post(url,body)
