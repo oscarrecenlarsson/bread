@@ -13,7 +13,7 @@ const PORT = process.argv[2];
 // Middleware...
 app.use(express.json());
 
-app.get("/api/blockchain", (req, res) => {
+app.get("/api/node", (req, res) => {
   res.status(200).json(logisticsBC);
 });
 
@@ -124,7 +124,7 @@ app.get("/api/node/shipments/shipment/:id", (req, res) => {
   res.status(201).json({ success: true, data: shipment });
 });
 
-app.get("/api/network/block", async (req, res) => {
+app.post("/api/network/block", async (req, res) => {
   const previousBlock = logisticsBC.getLastBlock();
   const previousHash = previousBlock.hash;
   const data = {
