@@ -59,8 +59,6 @@ module.exports = function (logisticsBC) {
     //Lägg till nya transaktioner till aktuell node
     logisticsBC.addShipmentToPendingList(shipment);
 
-    console.log("updated shipment", shipment.delivered);
-
     if (!shipment.delivered) {
       logisticsBC.addShipmentToProcessAndSend(shipment);
     } else {
