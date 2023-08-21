@@ -13,7 +13,7 @@ const PORT = process.argv[2];
 // Middleware...
 app.use(express.json());
 
-app.get("/api/node", (req, res) => {
+app.get("/api/network/node", (req, res) => {
   res.status(200).json(logisticsBC);
 });
 
