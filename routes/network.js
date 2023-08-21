@@ -1,9 +1,13 @@
+const axios = require("axios");
 const express = require("express");
 const router = express.Router();
+const node = require("./node");
 
 // const logisticsBC = require("../server").app.locals.logisticsBC;
 
 module.exports = function (logisticsBC) {
+  router.use("/api/node", node(logisticsBC));
+
   router.get("/node", (req, res) => {
     res.status(200).json(logisticsBC);
   });

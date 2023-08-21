@@ -19,6 +19,6 @@ const PORT = process.argv[2];
 app.use(express.json());
 
 app.use("/api/network", network(logisticsBC));
-app.use("/api/node", node);
+app.use("/api/node", node(logisticsBC));
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
