@@ -12,6 +12,30 @@ module.exports = function (logisticsBC) {
     res.status(200).json(logisticsBC);
   });
 
+  router.post("/node", async (req, res) => {
+    // 1. Placera nya noden i aktuell nodes networkNodes lista...
+    const urlToAdd = req.body.nodeUrl;
+
+    if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
+      logisticsBC.networkNodes.push(urlToAdd);
+    }
+    // 2. Iterera igenom vår networkNodes lista och skicka till varje node
+    // i listan samma nya node
+    logisticsBC.networkNodes.forEach(async (url) => {
+      const body = { nodeUrl: urlToAdd };
+
+      await axios.post(`${url}/api/node/node`, body);
+    });
+    // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
+    const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
+
+    await axios.post(`${urlToAdd}/api/node/nodes`, body);
+
+    res
+      .status(201)
+      .json({ success: true, data: "Ny nod tillagd i nätverket." });
+  });
+
   router.post("/shipment", (req, res) => {
     //skapa en ny transaction på aktuell node
     //behöver jag göra om denna för att det ska fungera med "move"????
@@ -112,30 +136,6 @@ module.exports = function (logisticsBC) {
       success: true,
       data: block,
     });
-  });
-
-  router.post("/node", async (req, res) => {
-    // 1. Placera nya noden i aktuell nodes networkNodes lista...
-    const urlToAdd = req.body.nodeUrl;
-
-    if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
-      logisticsBC.networkNodes.push(urlToAdd);
-    }
-    // 2. Iterera igenom vår networkNodes lista och skicka till varje node
-    // i listan samma nya node
-    logisticsBC.networkNodes.forEach(async (url) => {
-      const body = { nodeUrl: urlToAdd };
-
-      await axios.post(`${url}/api/node/node`, body);
-    });
-    // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
-    const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
-
-    await axios.post(`${urlToAdd}/api/node/nodes`, body);
-
-    res
-      .status(201)
-      .json({ success: true, data: "Ny nod tillagd i nätverket." });
   });
 
   return router;
