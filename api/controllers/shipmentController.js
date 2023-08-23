@@ -31,7 +31,11 @@ function createAndBroadcastShipment(logisticsBC, req, res) {
 
   res.status(201).json({
     sucess: true,
-    data: "shipment has been created and broadcasted to the network",
+    data: {
+      shipmentId: shipment.shipmentId,
+      currentLocation: shipment.currentLocation,
+    },
+    message: "shipment has been created and broadcasted to the network",
   });
 }
 
