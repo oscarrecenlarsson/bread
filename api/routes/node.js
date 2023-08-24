@@ -5,6 +5,10 @@ const axios = require("axios");
 // const logisticsBC = app.locals.logisticsBC;
 
 module.exports = function (logisticsBC) {
+  router.get("/", (req, res) => {
+    res.status(200).json(logisticsBC);
+  });
+
   router.post("/shipment", (req, res) => {
     //hämta ut transatktionsobjektet ifrån body i request objektet
     const shipment = req.body;
