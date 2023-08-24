@@ -11,11 +11,6 @@ const {
 module.exports = function (logisticsBC) {
   router.use("/api/node", node(logisticsBC));
 
-  //lägg get/node på "/" i node routen
-  router.get("/node", (req, res) => {
-    res.status(200).json(logisticsBC);
-  });
-
   router.post("/node", async (req, res) => {
     // 1. Placera nya noden i aktuell nodes networkNodes lista...
     const urlToAdd = req.body.nodeUrl;
