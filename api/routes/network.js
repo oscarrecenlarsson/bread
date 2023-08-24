@@ -11,6 +11,7 @@ const {
 module.exports = function (logisticsBC) {
   router.use("/api/node", node(logisticsBC));
 
+  //lägg get/node på "/" i node routen
   router.get("/node", (req, res) => {
     res.status(200).json(logisticsBC);
   });
