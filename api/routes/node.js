@@ -12,7 +12,15 @@ module.exports = function (logisticsBC) {
     res.status(201).json({ success: true, data: index });
   });
 
-  router.post("/shipments/shipment/:id", async (req, res) => {
+  router.get("/shipments/shipment/:id", (req, res) => {
+    const id = req.params["id"];
+    const shipment = logisticsBC.processAndSend.find(
+      (shipment) => shipment.shipmentId === id
+    );
+    res.status(201).json({ success: true, data: shipment });
+  });
+
+  router.patch("/shipments/shipment/:id", async (req, res) => {
     const id = req.params["id"];
     const response = await axios.get(
       `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
@@ -31,14 +39,6 @@ module.exports = function (logisticsBC) {
     });
 
     res.status(201).json({ success: true, data: updatedShipment });
-  });
-
-  router.get("/shipments/shipment/:id", (req, res) => {
-    const id = req.params["id"];
-    const shipment = logisticsBC.processAndSend.find(
-      (shipment) => shipment.shipmentId === id
-    );
-    res.status(201).json({ success: true, data: shipment });
   });
 
   router.post("/block", (req, res) => {

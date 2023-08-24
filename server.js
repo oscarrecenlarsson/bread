@@ -5,8 +5,8 @@ const Blockchain = require("./blockchain");
 const { default: axios } = require("axios");
 const app = express();
 
-const network = require("./routes/network");
-const node = require("./routes/node");
+const network = require("./api/routes/network");
+const node = require("./api/routes/node");
 
 const logisticsBC = new Blockchain();
 // app.locals.logisticsBC = logisticsBC;

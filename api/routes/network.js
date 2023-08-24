@@ -2,49 +2,46 @@ const axios = require("axios");
 const express = require("express");
 const router = express.Router();
 const node = require("./node");
+const {
+  createAndBroadcastShipment,
+} = require("../controllers/shipmentController");
 
 // const logisticsBC = require("../server").app.locals.logisticsBC;
 
 module.exports = function (logisticsBC) {
   router.use("/api/node", node(logisticsBC));
 
+  //lägg get/node på "/" i node routen
   router.get("/node", (req, res) => {
     res.status(200).json(logisticsBC);
   });
 
-  router.post("/shipment", (req, res) => {
-    //skapa en ny transaction på aktuell node
-    //behöver jag göra om denna för att det ska fungera med "move"????
+  router.post("/node", async (req, res) => {
+    // 1. Placera nya noden i aktuell nodes networkNodes lista...
+    const urlToAdd = req.body.nodeUrl;
 
-    //if body har ett helt shipmentobject sett shipment till det annars skapa en ny shipment:
-    // console.log(req.body);
-
-    const shipment = logisticsBC.createShipment(
-      req.body.route,
-      req.body.products
-    );
-
-    //Lägg till nya transaktioner till aktuell node
-    logisticsBC.addShipmentToPendingList(shipment);
-
-    logisticsBC.addShipmentToProcessAndSend(shipment);
-
-    //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
-    // behöver vi använda axios för att göra ett post anrop
-    //await axios.post(url,body)
-
-    //anropa api/transaction för alla network nodes
-
+    if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
+      logisticsBC.networkNodes.push(urlToAdd);
+    }
+    // 2. Iterera igenom vår networkNodes lista och skicka till varje node
+    // i listan samma nya node
     logisticsBC.networkNodes.forEach(async (url) => {
-      // const body = { transaction: transaction };
+      const body = { nodeUrl: urlToAdd };
 
-      await axios.post(`${url}/api/node/shipment`, shipment);
+      await axios.post(`${url}/api/node/node`, body);
     });
+    // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
+    const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
 
-    res.status(201).json({
-      sucess: true,
-      data: "shipment has been created and broadcasted to the network",
-    });
+    await axios.post(`${urlToAdd}/api/node/nodes`, body);
+
+    res
+      .status(201)
+      .json({ success: true, data: "Ny nod tillagd i nätverket." });
+  });
+
+  router.post("/shipment", (req, res) => {
+    createAndBroadcastShipment(logisticsBC, req, res);
   });
 
   router.patch("/shipment", (req, res) => {
@@ -58,8 +55,6 @@ module.exports = function (logisticsBC) {
 
     //Lägg till nya transaktioner till aktuell node
     logisticsBC.addShipmentToPendingList(shipment);
-
-    console.log("updated shipment", shipment.delivered);
 
     if (!shipment.delivered) {
       logisticsBC.addShipmentToProcessAndSend(shipment);
@@ -114,30 +109,6 @@ module.exports = function (logisticsBC) {
       success: true,
       data: block,
     });
-  });
-
-  router.post("/node", async (req, res) => {
-    // 1. Placera nya noden i aktuell nodes networkNodes lista...
-    const urlToAdd = req.body.nodeUrl;
-
-    if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
-      logisticsBC.networkNodes.push(urlToAdd);
-    }
-    // 2. Iterera igenom vår networkNodes lista och skicka till varje node
-    // i listan samma nya node
-    logisticsBC.networkNodes.forEach(async (url) => {
-      const body = { nodeUrl: urlToAdd };
-
-      await axios.post(`${url}/api/node/node`, body);
-    });
-    // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
-    const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
-
-    await axios.post(`${urlToAdd}/api/node/nodes`, body);
-
-    res
-      .status(201)
-      .json({ success: true, data: "Ny nod tillagd i nätverket." });
   });
 
   return router;
