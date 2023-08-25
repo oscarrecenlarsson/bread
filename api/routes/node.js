@@ -4,13 +4,14 @@ const axios = require("axios");
 const {
   registerNodeAtNode,
   registerNodesAtNode,
+  getFullNode,
 } = require("../controllers/nodeController");
 
 // const logisticsBC = app.locals.logisticsBC;
 
 module.exports = function (logisticsBC) {
   router.get("/", (req, res) => {
-    res.status(200).json(logisticsBC);
+    getFullNode(logisticsBC, req, res);
   });
 
   router.post("/shipment", (req, res) => {

@@ -1,5 +1,9 @@
 const axios = require("axios");
 
+function getFullNode(logisticsBC, req, res) {
+  res.status(200).json(logisticsBC);
+}
+
 async function createAndBroadcastNode(logisticsBC, req, res) {
   // 1. Placera nya noden i aktuell nodes networkNodes lista...
   const urlToAdd = req.body.nodeUrl;
@@ -53,6 +57,7 @@ function registerNodesAtNode(logisticsBC, req, res) {
 }
 
 module.exports = {
+  getFullNode,
   createAndBroadcastNode,
   registerNodeAtNode,
   registerNodesAtNode,
