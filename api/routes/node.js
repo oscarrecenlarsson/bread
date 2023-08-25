@@ -6,7 +6,7 @@ const {
   registerNodesAtNode,
   getFullNode,
 } = require("../controllers/nodeController");
-const { createShipmentAtNode } = require("../controllers/shipmentController");
+const { registerShipmentAtNode } = require("../controllers/shipmentController");
 
 // const logisticsBC = app.locals.logisticsBC;
 
@@ -16,7 +16,7 @@ module.exports = function (logisticsBC) {
   });
 
   router.post("/shipment", (req, res) => {
-    createShipmentAtNode(logisticsBC, req, res);
+    registerShipmentAtNode(logisticsBC, req, res);
   });
 
   router.get("/shipments/shipment/:id", (req, res) => {

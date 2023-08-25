@@ -39,10 +39,10 @@ function createAndBroadcastShipment(logisticsBC, req, res) {
   });
 }
 
-function createShipmentAtNode(logisticsBC, req, res) {
+function registerShipmentAtNode(logisticsBC, req, res) {
   //hämta ut transatktionsobjektet ifrån body i request objektet
   const shipment = req.body;
   const index = logisticsBC.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 }
-module.exports = { createAndBroadcastShipment, createShipmentAtNode };
+module.exports = { createAndBroadcastShipment, registerShipmentAtNode };
