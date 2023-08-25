@@ -6,7 +6,10 @@ const {
   registerNetworkNodesAtNode,
   getFullNode,
 } = require("../controllers/nodeController");
-const { registerShipmentAtNode } = require("../controllers/shipmentController");
+const {
+  registerShipmentAtNode,
+  SendShipmentToNextNode,
+} = require("../controllers/shipmentController");
 const {
   validateAndRegisterBlockAtNode,
 } = require("../controllers/blockController");
@@ -31,24 +34,7 @@ module.exports = function (logisticsBC) {
   });
 
   router.patch("/shipments/shipment/:id", async (req, res) => {
-    const id = req.params["id"];
-    const response = await axios.get(
-      `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
-    );
-
-    const shipment = response.data.data;
-
-    logisticsBC.removeShipmentFromProcessAndSend(shipment);
-
-    const updatedShipment = logisticsBC.updateShipment(shipment);
-
-    const url = updatedShipment.currentLocation;
-
-    await axios.patch(`${url}/api/network/shipment`, {
-      updatedShipment: updatedShipment,
-    });
-
-    res.status(201).json({ success: true, data: updatedShipment });
+    SendShipmentToNextNode(logisticsBC, req, res);
   });
 
   router.post("/block", (req, res) => {

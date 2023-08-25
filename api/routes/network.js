@@ -21,6 +21,7 @@ module.exports = function (logisticsBC) {
     createAndBroadcastShipment(logisticsBC, req, res);
   });
 
+  //createAndBroadcastUpdatedShipment
   router.patch("/shipment", (req, res) => {
     //skapa en ny transaction på aktuell node
     //behöver jag göra om denna för att det ska fungera med "move"????

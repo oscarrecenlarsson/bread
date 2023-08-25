@@ -45,4 +45,30 @@ function registerShipmentAtNode(logisticsBC, req, res) {
   const index = logisticsBC.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 }
-module.exports = { createAndBroadcastShipment, registerShipmentAtNode };
+
+async function SendShipmentToNextNode(logisticsBC, req, res) {
+  const id = req.params["id"];
+  const response = await axios.get(
+    `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
+  );
+
+  const shipment = response.data.data;
+
+  logisticsBC.removeShipmentFromProcessAndSend(shipment);
+
+  const updatedShipment = logisticsBC.updateShipment(shipment);
+
+  const url = updatedShipment.currentLocation;
+
+  await axios.patch(`${url}/api/network/shipment`, {
+    updatedShipment: updatedShipment,
+  });
+
+  res.status(201).json({ success: true, data: updatedShipment });
+}
+
+module.exports = {
+  createAndBroadcastShipment,
+  registerShipmentAtNode,
+  SendShipmentToNextNode,
+};
