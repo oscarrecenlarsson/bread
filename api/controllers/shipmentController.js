@@ -67,8 +67,17 @@ async function SendShipmentToNextNode(logisticsBC, req, res) {
   res.status(201).json({ success: true, data: updatedShipment });
 }
 
+function getProcessAndSendShipmentById(logisticsBC, req, res) {
+  const id = req.params["id"];
+  const shipment = logisticsBC.processAndSend.find(
+    (shipment) => shipment.shipmentId === id
+  );
+  res.status(201).json({ success: true, data: shipment });
+}
+
 module.exports = {
   createAndBroadcastShipment,
   registerShipmentAtNode,
   SendShipmentToNextNode,
+  getProcessAndSendShipmentById,
 };

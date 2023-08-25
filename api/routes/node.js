@@ -9,6 +9,7 @@ const {
 const {
   registerShipmentAtNode,
   SendShipmentToNextNode,
+  getProcessAndSendShipmentById,
 } = require("../controllers/shipmentController");
 const {
   validateAndRegisterBlockAtNode,
@@ -26,11 +27,7 @@ module.exports = function (logisticsBC) {
   });
 
   router.get("/shipments/shipment/:id", (req, res) => {
-    const id = req.params["id"];
-    const shipment = logisticsBC.processAndSend.find(
-      (shipment) => shipment.shipmentId === id
-    );
-    res.status(201).json({ success: true, data: shipment });
+    getProcessAndSendShipmentById(logisticsBC, req, res);
   });
 
   router.patch("/shipments/shipment/:id", async (req, res) => {
