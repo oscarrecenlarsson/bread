@@ -39,4 +39,10 @@ function createAndBroadcastShipment(logisticsBC, req, res) {
   });
 }
 
-module.exports = { createAndBroadcastShipment };
+function createShipmentAtNode(logisticsBC, req, res) {
+  //hämta ut transatktionsobjektet ifrån body i request objektet
+  const shipment = req.body;
+  const index = logisticsBC.addShipmentToPendingList(shipment);
+  res.status(201).json({ success: true, data: index });
+}
+module.exports = { createAndBroadcastShipment, createShipmentAtNode };
