@@ -1,31 +1,17 @@
 const axios = require("axios");
 
 function createAndBroadcastShipment(logisticsBC, req, res) {
-  //skapa en ny transaction på aktuell node
-  //behöver jag göra om denna för att det ska fungera med "move"????
-
-  //if body har ett helt shipmentobject sett shipment till det annars skapa en ny shipment:
-  // console.log(req.body);
-
   const shipment = logisticsBC.createShipment(
     req.body.route,
     req.body.products
   );
 
-  //Lägg till nya transaktioner till aktuell node
+  // add shipment to relevant lists at node
   logisticsBC.addShipmentToPendingList(shipment);
-
   logisticsBC.addShipmentToProcessAndSend(shipment);
 
-  //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
-  // behöver vi använda axios för att göra ett post anrop
-  //await axios.post(url,body)
-
-  //anropa api/transaction för alla network nodes
-
+  // register shipment at all network nodes (pendingList)
   logisticsBC.networkNodes.forEach(async (url) => {
-    // const body = { transaction: transaction };
-
     await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
@@ -35,48 +21,46 @@ function createAndBroadcastShipment(logisticsBC, req, res) {
       shipmentId: shipment.shipmentId,
       currentLocation: shipment.currentLocation,
     },
-    message: "shipment has been created and broadcasted to the network",
+    message: "Shipment has been created and broadcasted to the network",
   });
 }
 
 function registerShipmentAtNode(logisticsBC, req, res) {
-  //hämta ut transatktionsobjektet ifrån body i request objektet
   const shipment = req.body;
   const index = logisticsBC.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 }
 
 async function SendShipmentToNextNode(logisticsBC, req, res) {
+  // get the shipment object by id
   const id = req.params["id"];
   const response = await axios.get(
     `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
   );
-
   const shipment = response.data.data;
 
   logisticsBC.removeShipmentFromProcessAndSend(shipment);
 
   const updatedShipment = logisticsBC.updateShipment(shipment);
 
-  const url = updatedShipment.currentLocation;
+  const nextNodeUrl = updatedShipment.currentLocation;
 
-  await axios.patch(`${url}/api/network/shipment`, {
+  // the updated shipment is recieved at the next node
+  // and then broadcasted to the network
+  await axios.patch(`${nextNodeUrl}/api/network/shipment`, {
     updatedShipment: updatedShipment,
   });
 
-  res.status(201).json({ success: true, data: updatedShipment });
+  res.status(201).json({
+    success: true,
+    data: updatedShipment,
+    message: "Shipment has been sent to next node",
+  });
 }
 
 function recieveAndBroadcastUpdatedShipment(logisticsBC, req, res) {
-  //skapa en ny transaction på aktuell node
-  //behöver jag göra om denna för att det ska fungera med "move"????
-
-  //if body har ett helt shipmentobject sett shipment till det annars skapa en ny shipment:
-  // console.log("body", req.body);
-
   const shipment = req.body.updatedShipment;
 
-  //Lägg till nya transaktioner till aktuell node
   logisticsBC.addShipmentToPendingList(shipment);
 
   if (!shipment.delivered) {
@@ -85,19 +69,14 @@ function recieveAndBroadcastUpdatedShipment(logisticsBC, req, res) {
     logisticsBC.addShipmentToFinalized(shipment);
   }
 
-  //iterera igenom alla nätverksnoder i networkNodes och nropa reskpektive och skcika över den nya transaktionen
-  // behöver vi använda axios för att göra ett post anrop
-  //await axios.post(url,body)
-
-  //anropa api/transaction för alla network nodes
-
+  // register updated shipment at all network nodes (pendingList)
   logisticsBC.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
   res.status(201).json({
     sucess: true,
-    data: "shipment has been created and broadcasted to the network",
+    message: "shipment recieved at node and status broadcasted to the network",
   });
 }
 
