@@ -1,5 +1,5 @@
 const express = require("express");
-const Blockchain = require("./blockchain");
+const Blockchain = require("./models/blockchain");
 const network = require("./api/routes/network");
 const node = require("./api/routes/node");
 
