@@ -7,6 +7,9 @@ const {
   getFullNode,
 } = require("../controllers/nodeController");
 const { registerShipmentAtNode } = require("../controllers/shipmentController");
+const {
+  validateAndRegisterBlockAtNode,
+} = require("../controllers/blockController");
 
 // const logisticsBC = app.locals.logisticsBC;
 
@@ -49,23 +52,7 @@ module.exports = function (logisticsBC) {
   });
 
   router.post("/block", (req, res) => {
-    const block = req.body.block;
-    const lastBlock = logisticsBC.getLastBlock();
-    const hashIsCorrect = lastBlock.hash === block.previousHash;
-    const hasCorrectIndex = lastBlock.index + 1 === block.index;
-
-    if (hashIsCorrect && hasCorrectIndex) {
-      logisticsBC.chain.push(block);
-      logisticsBC.pendingList = [];
-
-      res.status(201).json({ success: true, data: block });
-    } else {
-      res.status(400).json({
-        success: false,
-        errorMessage: "Blocket är inte godkänt",
-        data: block,
-      });
-    }
+    validateAndRegisterBlockAtNode(logisticsBC, req, res);
   });
 
   // Registrera enskild node
