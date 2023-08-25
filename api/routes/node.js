@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const {
-  registerNodeAtNode,
-  registerNodesAtNode,
+  registerNetworkNodeAtNode,
+  registerNetworkNodesAtNode,
   getFullNode,
 } = require("../controllers/nodeController");
 const { registerShipmentAtNode } = require("../controllers/shipmentController");
@@ -57,12 +57,12 @@ module.exports = function (logisticsBC) {
 
   // Registrera enskild node
   router.post("/node", (req, res) => {
-    registerNodeAtNode(logisticsBC, req, res);
+    registerNetworkNodeAtNode(logisticsBC, req, res);
   });
 
   // Registrera en lista med noder...
   router.post("/nodes", (req, res) => {
-    registerNodesAtNode(logisticsBC, req, res);
+    registerNetworkNodesAtNode(logisticsBC, req, res);
   });
 
   return router;

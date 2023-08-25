@@ -26,7 +26,7 @@ async function createAndBroadcastNode(logisticsBC, req, res) {
   res.status(201).json({ success: true, data: "Ny nod tillagd i nätverket." });
 }
 
-function registerNodeAtNode(logisticsBC, req, res) {
+function registerNetworkNodeAtNode(logisticsBC, req, res) {
   // Få in en nodes unika adress(URL)...
   const url = req.body.nodeUrl; //http://localhost:3001
   // Kontrollera att vi inte redan har registrerat denna URL...
@@ -41,7 +41,7 @@ function registerNodeAtNode(logisticsBC, req, res) {
   res.status(201).json({ success: true, data: "Ny nod tillagd" });
 }
 
-function registerNodesAtNode(logisticsBC, req, res) {
+function registerNetworkNodesAtNode(logisticsBC, req, res) {
   const allNodes = req.body.nodes;
 
   allNodes.forEach((url) => {
@@ -59,6 +59,6 @@ function registerNodesAtNode(logisticsBC, req, res) {
 module.exports = {
   getFullNode,
   createAndBroadcastNode,
-  registerNodeAtNode,
-  registerNodesAtNode,
+  registerNetworkNodeAtNode,
+  registerNetworkNodesAtNode,
 };
