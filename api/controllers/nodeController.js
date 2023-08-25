@@ -37,4 +37,23 @@ function registerNodeAtNode(logisticsBC, req, res) {
   res.status(201).json({ success: true, data: "Ny nod tillagd" });
 }
 
-module.exports = { createAndBroadcastNode, registerNodeAtNode };
+function registerNodesAtNode(logisticsBC, req, res) {
+  const allNodes = req.body.nodes;
+
+  allNodes.forEach((url) => {
+    if (
+      logisticsBC.networkNodes.indexOf(url) === -1 &&
+      logisticsBC.nodeUrl !== url
+    ) {
+      logisticsBC.networkNodes.push(url);
+    }
+  });
+
+  res.status(201).json({ success: true, data: "Nya noder tillagda" });
+}
+
+module.exports = {
+  createAndBroadcastNode,
+  registerNodeAtNode,
+  registerNodesAtNode,
+};

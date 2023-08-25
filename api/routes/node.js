@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { registerNodeAtNode } = require("../controllers/nodeController");
+const {
+  registerNodeAtNode,
+  registerNodesAtNode,
+} = require("../controllers/nodeController");
 
 // const logisticsBC = app.locals.logisticsBC;
 
@@ -73,18 +76,7 @@ module.exports = function (logisticsBC) {
 
   // Registrera en lista med noder...
   router.post("/nodes", (req, res) => {
-    const allNodes = req.body.nodes;
-
-    allNodes.forEach((url) => {
-      if (
-        logisticsBC.networkNodes.indexOf(url) === -1 &&
-        logisticsBC.nodeUrl !== url
-      ) {
-        logisticsBC.networkNodes.push(url);
-      }
-    });
-
-    res.status(201).json({ success: true, data: "Nya noder tillagda" });
+    registerNodesAtNode(logisticsBC, req, res);
   });
 
   return router;
