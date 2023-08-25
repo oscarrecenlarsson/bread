@@ -5,43 +5,49 @@ function getFullNode(logisticsBC, req, res) {
 }
 
 async function createAndBroadcastNode(logisticsBC, req, res) {
-  // 1. Placera nya noden i aktuell nodes networkNodes lista...
-  const urlToAdd = req.body.nodeUrl;
-
-  if (logisticsBC.networkNodes.indexOf(urlToAdd) === -1) {
-    logisticsBC.networkNodes.push(urlToAdd);
+  // add new node to networkNodes list at current node
+  const nodeUrlToAdd = req.body.nodeUrl;
+  if (logisticsBC.networkNodes.indexOf(nodeUrlToAdd) === -1) {
+    logisticsBC.networkNodes.push(nodeUrlToAdd);
   }
-  // 2. Iterera igenom vår networkNodes lista och skicka till varje node
-  // i listan samma nya node
+  // add new node to networkNodes list for all other nodes in the network
   logisticsBC.networkNodes.forEach(async (url) => {
-    const body = { nodeUrl: urlToAdd };
+    const body = { nodeUrl: nodeUrlToAdd };
 
     await axios.post(`${url}/api/node/node`, body);
   });
-  // 3. Uppdatera nya noden med samma noder som vi har i nätverket...
+  // add all network nodes to the new node
   const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
 
-  await axios.post(`${urlToAdd}/api/node/nodes`, body);
+  await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
-  res.status(201).json({ success: true, data: "Ny nod tillagd i nätverket." });
+  res
+    .status(201)
+    .json({ success: true, message: "New node added to the network" });
 }
 
 function registerNetworkNodeAtNode(logisticsBC, req, res) {
-  // Få in en nodes unika adress(URL)...
-  const url = req.body.nodeUrl; //http://localhost:3001
-  // Kontrollera att vi inte redan har registrerat denna URL...
-  // Om inte registrera, dvs placera noden i vår networkNode lista...
+  // add node to networkNodes list as long as it is not already there
+  // or the url matches the current nodes url
+
+  const nodeUrlToAdd = req.body.nodeUrl;
+
   if (
-    logisticsBC.networkNodes.indexOf(url) === -1 &&
-    logisticsBC.nodeUrl !== url
+    logisticsBC.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
+    logisticsBC.nodeUrl !== nodeUrlToAdd
   ) {
-    logisticsBC.networkNodes.push(url);
+    logisticsBC.networkNodes.push(nodeUrlToAdd);
   }
 
-  res.status(201).json({ success: true, data: "Ny nod tillagd" });
+  res
+    .status(201)
+    .json({ success: true, message: "New network node added at node" });
 }
 
 function registerNetworkNodesAtNode(logisticsBC, req, res) {
+  // add nodes to networkNodes list as long as they are not already there
+  // or any of the URLs matches the current nodes URL
+
   const allNodes = req.body.nodes;
 
   allNodes.forEach((url) => {
@@ -53,7 +59,9 @@ function registerNetworkNodesAtNode(logisticsBC, req, res) {
     }
   });
 
-  res.status(201).json({ success: true, data: "Nya noder tillagda" });
+  res
+    .status(201)
+    .json({ success: true, message: "New network nodes added at node" });
 }
 
 module.exports = {
