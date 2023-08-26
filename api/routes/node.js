@@ -5,6 +5,7 @@ const {
   registerNetworkNodeAtNode,
   registerNetworkNodesAtNode,
   getFullNode,
+  synchronizeNode,
 } = require("../controllers/nodeController");
 const {
   registerShipmentAtNode,
@@ -42,6 +43,10 @@ module.exports = function (logisticsBC) {
 
   router.post("/nodes", (req, res) => {
     registerNetworkNodesAtNode(logisticsBC, req, res);
+  });
+
+  router.get("/consensus", (req, res) => {
+    synchronizeNode(logisticsBC, req, res);
   });
   return router;
 };

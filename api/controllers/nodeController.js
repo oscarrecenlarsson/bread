@@ -64,9 +64,44 @@ function registerNetworkNodesAtNode(logisticsBC, req, res) {
     .json({ success: true, message: "New network nodes added at node" });
 }
 
+async function synchronizeNode(logisticsBC, req, res) {
+  const currentChainLength = logisticsBC.chain.length;
+  let maxLength = currentChainLength;
+  let longestChain = null;
+  let pendingList = null;
+
+  logisticsBC.networkNodes.forEach(async (networkNodeUrl) => {
+    // get the network node
+    const response = await axios.get(`${networkNodeUrl}/api/node`);
+
+    const NetworkChain = response.data.chain;
+    const NetworkPendingList = response.data.pendingList;
+
+    if (NetworkChain.length > maxLength) {
+      maxLength = NetworkChain.length;
+      longestChain = NetworkChain;
+      pendingList = NetworkPendingList;
+    }
+
+    if (
+      !longestChain ||
+      (longestChain && !logisticsBC.validateChain(longestChain))
+    ) {
+      console.log("No replacement needed");
+    } else {
+      logisticsBC.chain = longestChain;
+      logisticsBC.pendingList = pendingList;
+    }
+  });
+  res
+    .status(200)
+    .json({ success: true, message: "Node is synchronized and up to date" });
+}
+
 module.exports = {
   getFullNode,
   createAndBroadcastNode,
   registerNetworkNodeAtNode,
   registerNetworkNodesAtNode,
+  synchronizeNode,
 };
