@@ -25,13 +25,14 @@ module.exports = function (logisticsBC) {
     registerShipmentAtNode(logisticsBC, req, res);
   });
 
-  router.get("/shipments/shipment/:id", (req, res) => {
-    getProcessAndSendShipmentById(logisticsBC, req, res);
-  });
-
-  router.patch("/shipments/shipment/:id", async (req, res) => {
-    SendShipmentToNextNode(logisticsBC, req, res);
-  });
+  router
+    .route("/shipments/shipment/:id")
+    .get((req, res) => {
+      getProcessAndSendShipmentById(logisticsBC, req, res);
+    })
+    .patch(async (req, res) => {
+      SendShipmentToNextNode(logisticsBC, req, res);
+    });
 
   router.post("/block", (req, res) => {
     validateAndRegisterBlockAtNode(logisticsBC, req, res);
