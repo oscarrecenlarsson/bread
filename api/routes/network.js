@@ -15,13 +15,14 @@ module.exports = function (logisticsBC) {
     await createAndBroadcastNode(logisticsBC, req, res);
   });
 
-  router.post("/shipment", (req, res) => {
-    createAndBroadcastShipment(logisticsBC, req, res);
-  });
-
-  router.patch("/shipment", (req, res) => {
-    recieveAndBroadcastUpdatedShipment(logisticsBC, req, res);
-  });
+  router
+    .route("/shipment")
+    .post((req, res) => {
+      createAndBroadcastShipment(logisticsBC, req, res);
+    })
+    .patch((req, res) => {
+      recieveAndBroadcastUpdatedShipment(logisticsBC, req, res);
+    });
 
   router.post("/block", async (req, res) => {
     mineBlock(logisticsBC, req, res);
