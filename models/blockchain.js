@@ -121,4 +121,44 @@ Blockchain.prototype.proofOfWork = function (prevHash, data) {
   return nonce;
 };
 
+Blockchain.prototype.validateChain = function (blockChain) {
+  let isValid = true;
+
+  for (i = 1; i < blockChain.length; i++) {
+    const block = blockChain[i];
+    const previousBlock = blockChain[i - 1];
+    const hash = this.createHash(
+      previousBlock.hash,
+      { data: block.data, index: block.index },
+      block.nonce
+    );
+
+    if (hash !== block.hash) {
+      isValid = false;
+    }
+
+    if (block.previousHash !== previousBlock.hash) {
+      isValid = false;
+    }
+  }
+
+  // Validera genisis blocket...
+  const genesisBlock = blockChain.at(0);
+  const isGenesisNonceValid = genesisBlock.nonce === 1;
+  const isGenesisHashValid = genesisBlock.hash === "Genisis";
+  const isGenesisPreviousHashValid = genesisBlock.previousHash === "Genisis";
+  const hasNoData = genesisBlock.data.length === 0;
+
+  if (
+    !isGenesisNonceValid ||
+    !isGenesisHashValid ||
+    !isGenesisPreviousHashValid ||
+    !hasNoData
+  ) {
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 module.exports = Blockchain;
