@@ -21,6 +21,9 @@ async function createAndBroadcastNode(logisticsBC, req, res) {
 
   await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
+  // sync chain and pendingList to the new node
+  await axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+
   res
     .status(201)
     .json({ success: true, message: "New node added to the network" });
