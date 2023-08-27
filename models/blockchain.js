@@ -76,11 +76,9 @@ class Blockchain {
 
     if (!isNonceValid || !isHashValid || !isPreviousHashValid || !hasNoData) {
       isValid = false;
-    }
-
-    if (!isValid) {
       console.log("GENESIS BLOCK NOT OK");
     }
+
     return isValid;
   }
 
