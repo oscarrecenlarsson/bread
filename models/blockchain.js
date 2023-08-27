@@ -67,6 +67,11 @@ class Blockchain {
         isValid = false;
         console.log("prevhash IS INVALID");
       }
+
+      if (blockToValidate.index !== prevBlock.index + 1) {
+        console.log("INDEX IS INVALID");
+        isValid = false;
+      }
     }
 
     // validate genesis block
@@ -104,6 +109,11 @@ class Blockchain {
 
     if (blockToValidate.prevHash !== prevBlock.hash) {
       console.log("prevhash IS INVALID");
+      isValid = false;
+    }
+
+    if (blockToValidate.index !== prevBlock.index + 1) {
+      console.log("INDEX IS INVALID");
       isValid = false;
     }
 
