@@ -1,7 +1,6 @@
 const sha256 = require("sha256");
 const { v4: uuidv4 } = require("uuid");
-// Class...
-// Constructor function...
+
 function Blockchain() {
   this.chain = [];
   this.pendingList = [];
@@ -10,11 +9,9 @@ function Blockchain() {
   this.nodeUrl = process.argv[3];
   this.networkNodes = [];
 
-  // Skapa genesis blocket...
-  this.createBlock(1, "Genisis", "Genisis");
+  this.createBlock(1, "Genesis", "Genesis");
 }
 
-// Skapa ett block
 Blockchain.prototype.createBlock = function (nonce, previousHash, hash) {
   const block = {
     index: this.chain.length + 1,
@@ -31,7 +28,6 @@ Blockchain.prototype.createBlock = function (nonce, previousHash, hash) {
   return block;
 };
 
-// Hämta senaste blocket...
 Blockchain.prototype.getLastBlock = function () {
   return this.chain.at(-1);
 };
@@ -75,11 +71,7 @@ Blockchain.prototype.updateShipment = function (shipment) {
 
   return updatedShipment;
 };
-// Blockchain.prototype.sendShipment = function (shipment) {
-//   // ta bort shipment från this.processAndSend
-// }
 
-//funktion som adderar en transaktion till pendinglist
 Blockchain.prototype.addShipmentToPendingList = function (shipment) {
   this.pendingList.push(shipment);
   return this.getLastBlock()["index"] + 1;
@@ -88,10 +80,6 @@ Blockchain.prototype.addShipmentToPendingList = function (shipment) {
 Blockchain.prototype.addShipmentToProcessAndSend = function (shipment) {
   this.processAndSend.push(shipment);
 };
-
-// Blockchain.prototype.addShipmentToProcessAndSendAtNextNode = function (shipment) {
-//   this.processAndSend.push(shipment);
-// };
 
 Blockchain.prototype.removeShipmentFromProcessAndSend = function (shipment) {
   const index = this.processAndSend.indexOf(shipment);
@@ -102,7 +90,6 @@ Blockchain.prototype.addShipmentToFinalized = function (shipment) {
   this.finalized.push(shipment);
 };
 
-// Skapa ett hash värde...
 Blockchain.prototype.createHash = function (prevHash, data, nonce) {
   const stringToHash = prevHash + JSON.stringify(data) + nonce.toString();
   const hash = sha256(stringToHash);
@@ -117,7 +104,6 @@ Blockchain.prototype.proofOfWork = function (prevHash, data) {
     nonce++;
     hash = this.createHash(prevHash, data, nonce);
   }
-
   return nonce;
 };
 
@@ -142,11 +128,11 @@ Blockchain.prototype.validateChain = function (blockChain) {
     }
   }
 
-  // Validera genisis blocket...
+  // validate genesis block
   const genesisBlock = blockChain.at(0);
   const isGenesisNonceValid = genesisBlock.nonce === 1;
-  const isGenesisHashValid = genesisBlock.hash === "Genisis";
-  const isGenesisPreviousHashValid = genesisBlock.previousHash === "Genisis";
+  const isGenesisHashValid = genesisBlock.hash === "Genesis";
+  const isGenesisPreviousHashValid = genesisBlock.previousHash === "Genesis";
   const hasNoData = genesisBlock.data.length === 0;
 
   if (
