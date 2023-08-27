@@ -50,38 +50,61 @@ class Blockchain {
     let isValid = true;
 
     for (let i = 1; i < chainToValidate.length; i++) {
-      const block = chainToValidate[i];
+      const blockToValidate = chainToValidate[i];
       const prevBlock = chainToValidate[i - 1];
-      const hash = this.createHash(prevBlock.hash, block.data, block.nonce);
-
-      if (hash !== block.hash) {
-        isValid = false;
-        console.log("HASH IS INVALID");
-      }
-
-      if (block.prevHash !== prevBlock.hash) {
-        isValid = false;
-        console.log("prevhash IS INVALID");
+      isValid = this.validateBlock(blockToValidate, prevBlock);
+      if (!isValid) {
+        break;
       }
     }
 
     // validate genesis block
-    const genesisBlock = chainToValidate.at(0);
-    const isGenesisNonceValid = genesisBlock.nonce === 1;
-    const isGenesisHashValid = genesisBlock.hash === "Genesis";
-    const isGenesisPreviousHashValid = genesisBlock.prevHash === "Genesis";
+    if (isValid) {
+      const genesisBlock = chainToValidate[0];
+      isValid = this.validateGenesisBlock(genesisBlock);
+    }
+    console.log("isValid", isValid);
+    return isValid;
+  }
+
+  validateGenesisBlock(genesisBlock) {
+    let isValid = true;
+    const isNonceValid = genesisBlock.nonce === 1;
+    const isHashValid = genesisBlock.hash === "Genesis";
+    const isPreviousHashValid = genesisBlock.prevHash === "Genesis";
     const hasNoData = genesisBlock.data === null;
 
-    if (
-      !isGenesisNonceValid ||
-      !isGenesisHashValid ||
-      !isGenesisPreviousHashValid ||
-      !hasNoData
-    ) {
+    if (!isNonceValid || !isHashValid || !isPreviousHashValid || !hasNoData) {
       isValid = false;
       console.log("GENESIS BLOCK NOT OK");
     }
-    console.log("isValid", isValid);
+
+    return isValid;
+  }
+
+  validateBlock(blockToValidate, prevBlock) {
+    let isValid = true;
+    const hash = this.createHash(
+      prevBlock.hash,
+      blockToValidate.data,
+      blockToValidate.nonce
+    );
+
+    if (hash !== blockToValidate.hash) {
+      console.log("HASH IS INVALID");
+      isValid = false;
+    }
+
+    if (blockToValidate.prevHash !== prevBlock.hash) {
+      console.log("prevhash IS INVALID");
+      isValid = false;
+    }
+
+    if (blockToValidate.index !== prevBlock.index + 1) {
+      console.log("INDEX IS INVALID");
+      isValid = false;
+    }
+
     return isValid;
   }
 }
