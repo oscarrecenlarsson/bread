@@ -1,26 +1,32 @@
 const sha256 = require("sha256");
 const { v4: uuidv4 } = require("uuid");
+const Block = require("./Block");
 
 function Blockchain() {
-  this.chain = [];
+  this.chain = [Block.genesis()];
   this.pendingList = [];
-  this.createBlock(1, "Genesis", "Genesis");
 }
 
-Blockchain.prototype.createBlock = function (nonce, previousHash, hash) {
-  const block = {
-    index: this.chain.length + 1,
-    timestamp: Date.now(),
-    data: this.pendingList,
-    nonce: nonce,
-    hash: hash,
-    previousHash: previousHash,
-  };
-
+Blockchain.prototype.createBlock = function (nonce, prevHash, hash) {
+  const index = this.chain.length + 1;
+  const data = this.pendingList;
+  const newBlock = new Block({ nonce, data, prevHash, hash, index });
   this.pendingList = [];
-  this.chain.push(block);
+  this.chain.push(newBlock);
+  return newBlock;
+};
 
-  return block;
+Blockchain.prototype.mineBlock = function () {
+  const previousBlock = this.getLastBlock();
+  const previousHash = previousBlock.hash;
+  const data = {
+    data: this.pendingList,
+    index: previousBlock.index + 1,
+  };
+  const nonce = this.proofOfWork(previousHash, data);
+  const hash = this.createHash(previousHash, data, nonce);
+
+  return this.createBlock(nonce, previousHash, hash);
 };
 
 Blockchain.prototype.getLastBlock = function () {
@@ -110,7 +116,7 @@ Blockchain.prototype.validateChain = function (blockChain) {
   const isGenesisNonceValid = genesisBlock.nonce === 1;
   const isGenesisHashValid = genesisBlock.hash === "Genesis";
   const isGenesisPreviousHashValid = genesisBlock.previousHash === "Genesis";
-  const hasNoData = genesisBlock.data.length === 0;
+  const hasNoData = genesisBlock.data === null;
 
   if (
     !isGenesisNonceValid ||

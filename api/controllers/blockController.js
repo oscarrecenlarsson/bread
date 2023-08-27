@@ -1,16 +1,7 @@
 const axios = require("axios");
 
 async function mineBlock(logisticsNode, req, res) {
-  const previousBlock = logisticsNode.blockchain.getLastBlock();
-  const previousHash = previousBlock.hash;
-  const data = {
-    data: logisticsNode.blockchain.pendingList,
-    index: previousBlock.index + 1,
-  };
-  const nonce = logisticsNode.blockchain.proofOfWork(previousHash, data);
-  const hash = logisticsNode.blockchain.createHash(previousHash, data, nonce);
-
-  const block = logisticsNode.blockchain.createBlock(nonce, previousHash, hash);
+  const block = logisticsNode.blockchain.mineBlock();
 
   logisticsNode.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/block`, { block: block });
@@ -25,7 +16,7 @@ async function mineBlock(logisticsNode, req, res) {
 function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   const block = req.body.block;
   const lastBlock = logisticsNode.blockchain.getLastBlock();
-  const hashIsCorrect = lastBlock.hash === block.previousHash;
+  const hashIsCorrect = lastBlock.hash === block.prevHash;
   const hasCorrectIndex = lastBlock.index + 1 === block.index;
 
   if (hashIsCorrect && hasCorrectIndex) {
