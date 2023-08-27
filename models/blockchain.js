@@ -50,16 +50,20 @@ class Blockchain {
     let isValid = true;
 
     for (let i = 1; i < chainToValidate.length; i++) {
-      const block = chainToValidate[i];
+      const blockToValidate = chainToValidate[i];
       const prevBlock = chainToValidate[i - 1];
-      const hash = this.createHash(prevBlock.hash, block.data, block.nonce);
+      const hash = this.createHash(
+        prevBlock.hash,
+        blockToValidate.data,
+        blockToValidate.nonce
+      );
 
-      if (hash !== block.hash) {
+      if (hash !== blockToValidate.hash) {
         isValid = false;
         console.log("HASH IS INVALID");
       }
 
-      if (block.prevHash !== prevBlock.hash) {
+      if (blockToValidate.prevHash !== prevBlock.hash) {
         isValid = false;
         console.log("prevhash IS INVALID");
       }
@@ -82,6 +86,27 @@ class Blockchain {
       console.log("GENESIS BLOCK NOT OK");
     }
     console.log("isValid", isValid);
+    return isValid;
+  }
+
+  validateBlock(blockToValidate, prevBlock) {
+    let isValid = true;
+    const hash = this.createHash(
+      prevBlock.hash,
+      blockToValidate.data,
+      blockToValidate.nonce
+    );
+
+    if (hash !== blockToValidate.hash) {
+      console.log("HASH IS INVALID");
+      isValid = false;
+    }
+
+    if (blockToValidate.prevHash !== prevBlock.hash) {
+      console.log("prevhash IS INVALID");
+      isValid = false;
+    }
+
     return isValid;
   }
 }
