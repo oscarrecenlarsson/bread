@@ -1,17 +1,17 @@
 const axios = require("axios");
 
-function createAndBroadcastShipment(logisticsBC, req, res) {
-  const shipment = logisticsBC.createShipment(
+function createAndBroadcastShipment(logisticsNode, req, res) {
+  const shipment = logisticsNode.blockchain.createShipment(
     req.body.route,
     req.body.products
   );
 
   // add shipment to relevant lists at node
-  logisticsBC.addShipmentToPendingList(shipment);
-  logisticsBC.addShipmentToProcessAndSend(shipment);
+  logisticsNode.addShipmentToPendingList(shipment);
+  logisticsNode.addShipmentToProcessAndSend(shipment);
 
   // register shipment at all network nodes (pendingList)
-  logisticsBC.networkNodes.forEach(async (url) => {
+  logisticsNode.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
@@ -25,23 +25,23 @@ function createAndBroadcastShipment(logisticsBC, req, res) {
   });
 }
 
-function registerShipmentAtNode(logisticsBC, req, res) {
+function registerShipmentAtNode(logisticsNode, req, res) {
   const shipment = req.body;
-  const index = logisticsBC.addShipmentToPendingList(shipment);
+  const index = logisticsNode.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 }
 
-async function SendShipmentToNextNode(logisticsBC, req, res) {
+async function SendShipmentToNextNode(logisticsNode, req, res) {
   // get the shipment object by id
   const id = req.params["id"];
   const response = await axios.get(
-    `${logisticsBC.nodeUrl}/api/node/shipments/shipment/${id}`
+    `${logisticsNode.nodeUrl}/api/node/shipments/shipment/${id}`
   );
   const shipment = response.data.data;
 
-  logisticsBC.removeShipmentFromProcessAndSend(shipment);
+  logisticsNode.removeShipmentFromProcessAndSend(shipment);
 
-  const updatedShipment = logisticsBC.updateShipment(shipment);
+  const updatedShipment = logisticsNode.blockchain.updateShipment(shipment);
 
   const nextNodeUrl = updatedShipment.currentLocation;
 
@@ -58,19 +58,19 @@ async function SendShipmentToNextNode(logisticsBC, req, res) {
   });
 }
 
-function recieveAndBroadcastUpdatedShipment(logisticsBC, req, res) {
+function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
   const shipment = req.body.updatedShipment;
 
-  logisticsBC.addShipmentToPendingList(shipment);
+  logisticsNode.addShipmentToPendingList(shipment);
 
   if (!shipment.delivered) {
-    logisticsBC.addShipmentToProcessAndSend(shipment);
+    logisticsNode.addShipmentToProcessAndSend(shipment);
   } else {
-    logisticsBC.addShipmentToFinalized(shipment);
+    logisticsNode.addShipmentToFinalized(shipment);
   }
 
   // register updated shipment at all network nodes (pendingList)
-  logisticsBC.networkNodes.forEach(async (url) => {
+  logisticsNode.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/shipment`, shipment);
   });
 
@@ -80,9 +80,9 @@ function recieveAndBroadcastUpdatedShipment(logisticsBC, req, res) {
   });
 }
 
-function getProcessAndSendShipmentById(logisticsBC, req, res) {
+function getProcessAndSendShipmentById(logisticsNode, req, res) {
   const id = req.params["id"];
-  const shipment = logisticsBC.processAndSend.find(
+  const shipment = logisticsNode.processAndSend.find(
     (shipment) => shipment.shipmentId === id
   );
   res.status(201).json({ success: true, data: shipment });

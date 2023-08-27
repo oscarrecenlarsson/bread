@@ -1,23 +1,25 @@
 const axios = require("axios");
 
-function getFullNode(logisticsBC, req, res) {
-  res.status(200).json(logisticsBC);
+function getFullNode(logisticsNode, req, res) {
+  res.status(200).json(logisticsNode);
 }
 
-async function createAndBroadcastNode(logisticsBC, req, res) {
+async function createAndBroadcastNode(logisticsNode, req, res) {
   // add new node to networkNodes list at current node
   const nodeUrlToAdd = req.body.nodeUrl;
-  if (logisticsBC.networkNodes.indexOf(nodeUrlToAdd) === -1) {
-    logisticsBC.networkNodes.push(nodeUrlToAdd);
+  if (logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1) {
+    logisticsNode.networkNodes.push(nodeUrlToAdd);
   }
   // add new node to networkNodes list for all other nodes in the network
-  logisticsBC.networkNodes.forEach(async (url) => {
+  logisticsNode.networkNodes.forEach(async (url) => {
     const body = { nodeUrl: nodeUrlToAdd };
 
     await axios.post(`${url}/api/node/node`, body);
   });
   // add all network nodes to the new node
-  const body = { nodes: [...logisticsBC.networkNodes, logisticsBC.nodeUrl] };
+  const body = {
+    nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
+  };
 
   await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
@@ -29,17 +31,17 @@ async function createAndBroadcastNode(logisticsBC, req, res) {
     .json({ success: true, message: "New node added to the network" });
 }
 
-function registerNetworkNodeAtNode(logisticsBC, req, res) {
+function registerNetworkNodeAtNode(logisticsNode, req, res) {
   // add node to networkNodes list as long as it is not already there
   // or the url matches the current nodes url
 
   const nodeUrlToAdd = req.body.nodeUrl;
 
   if (
-    logisticsBC.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
-    logisticsBC.nodeUrl !== nodeUrlToAdd
+    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
+    logisticsNode.nodeUrl !== nodeUrlToAdd
   ) {
-    logisticsBC.networkNodes.push(nodeUrlToAdd);
+    logisticsNode.networkNodes.push(nodeUrlToAdd);
   }
 
   res
@@ -47,7 +49,7 @@ function registerNetworkNodeAtNode(logisticsBC, req, res) {
     .json({ success: true, message: "New network node added at node" });
 }
 
-function registerNetworkNodesAtNode(logisticsBC, req, res) {
+function registerNetworkNodesAtNode(logisticsNode, req, res) {
   // add nodes to networkNodes list as long as they are not already there
   // or any of the URLs matches the current nodes URL
 
@@ -55,10 +57,10 @@ function registerNetworkNodesAtNode(logisticsBC, req, res) {
 
   allNodes.forEach((url) => {
     if (
-      logisticsBC.networkNodes.indexOf(url) === -1 &&
-      logisticsBC.nodeUrl !== url
+      logisticsNode.networkNodes.indexOf(url) === -1 &&
+      logisticsNode.nodeUrl !== url
     ) {
-      logisticsBC.networkNodes.push(url);
+      logisticsNode.networkNodes.push(url);
     }
   });
 
@@ -67,18 +69,18 @@ function registerNetworkNodesAtNode(logisticsBC, req, res) {
     .json({ success: true, message: "New network nodes added at node" });
 }
 
-async function synchronizeNode(logisticsBC, req, res) {
-  const currentChainLength = logisticsBC.chain.length;
+async function synchronizeNode(logisticsNode, req, res) {
+  const currentChainLength = logisticsNode.blockchain.chain.length;
   let maxLength = currentChainLength;
   let longestChain = null;
   let pendingList = null;
 
-  logisticsBC.networkNodes.forEach(async (networkNodeUrl) => {
+  logisticsNode.networkNodes.forEach(async (networkNodeUrl) => {
     // get the network node
     const response = await axios.get(`${networkNodeUrl}/api/node`);
 
-    const NetworkChain = response.data.chain;
-    const NetworkPendingList = response.data.pendingList;
+    const NetworkChain = response.data.blockchain.chain;
+    const NetworkPendingList = response.data.blockchain.pendingList;
 
     if (NetworkChain.length > maxLength) {
       maxLength = NetworkChain.length;
@@ -88,12 +90,12 @@ async function synchronizeNode(logisticsBC, req, res) {
 
     if (
       !longestChain ||
-      (longestChain && !logisticsBC.validateChain(longestChain))
+      (longestChain && !logisticsNode.blockchain.validateChain(longestChain))
     ) {
       console.log("No replacement needed");
     } else {
-      logisticsBC.chain = longestChain;
-      logisticsBC.pendingList = pendingList;
+      logisticsNode.blockchain.chain = longestChain;
+      logisticsNode.blockchain.pendingList = pendingList;
     }
   });
   res

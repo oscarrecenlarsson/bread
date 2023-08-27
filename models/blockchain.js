@@ -4,11 +4,6 @@ const { v4: uuidv4 } = require("uuid");
 function Blockchain() {
   this.chain = [];
   this.pendingList = [];
-  this.processAndSend = [];
-  this.finalized = [];
-  this.nodeUrl = process.argv[3];
-  this.networkNodes = [];
-
   this.createBlock(1, "Genesis", "Genesis");
 }
 
@@ -70,24 +65,6 @@ Blockchain.prototype.updateShipment = function (shipment) {
   };
 
   return updatedShipment;
-};
-
-Blockchain.prototype.addShipmentToPendingList = function (shipment) {
-  this.pendingList.push(shipment);
-  return this.getLastBlock()["index"] + 1;
-};
-
-Blockchain.prototype.addShipmentToProcessAndSend = function (shipment) {
-  this.processAndSend.push(shipment);
-};
-
-Blockchain.prototype.removeShipmentFromProcessAndSend = function (shipment) {
-  const index = this.processAndSend.indexOf(shipment);
-  this.processAndSend.splice(index, 1);
-};
-
-Blockchain.prototype.addShipmentToFinalized = function (shipment) {
-  this.finalized.push(shipment);
 };
 
 Blockchain.prototype.createHash = function (prevHash, data, nonce) {

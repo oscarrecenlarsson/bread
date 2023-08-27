@@ -8,24 +8,24 @@ const {
 const { createAndBroadcastNode } = require("../controllers/nodeController");
 const { mineBlock } = require("../controllers/blockController");
 
-module.exports = function (logisticsBC) {
-  router.use("/api/node", node(logisticsBC));
+module.exports = function (logisticsNode) {
+  router.use("/api/node", node(logisticsNode));
 
   router.post("/node", async (req, res) => {
-    await createAndBroadcastNode(logisticsBC, req, res);
+    await createAndBroadcastNode(logisticsNode, req, res);
   });
 
   router
     .route("/shipment")
     .post((req, res) => {
-      createAndBroadcastShipment(logisticsBC, req, res);
+      createAndBroadcastShipment(logisticsNode, req, res);
     })
     .patch((req, res) => {
-      recieveAndBroadcastUpdatedShipment(logisticsBC, req, res);
+      recieveAndBroadcastUpdatedShipment(logisticsNode, req, res);
     });
 
   router.post("/block", async (req, res) => {
-    mineBlock(logisticsBC, req, res);
+    mineBlock(logisticsNode, req, res);
   });
   return router;
 };
