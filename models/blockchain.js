@@ -52,45 +52,35 @@ class Blockchain {
     for (let i = 1; i < chainToValidate.length; i++) {
       const blockToValidate = chainToValidate[i];
       const prevBlock = chainToValidate[i - 1];
-      const hash = this.createHash(
-        prevBlock.hash,
-        blockToValidate.data,
-        blockToValidate.nonce
-      );
-
-      if (hash !== blockToValidate.hash) {
-        isValid = false;
-        console.log("HASH IS INVALID");
-      }
-
-      if (blockToValidate.prevHash !== prevBlock.hash) {
-        isValid = false;
-        console.log("prevhash IS INVALID");
-      }
-
-      if (blockToValidate.index !== prevBlock.index + 1) {
-        console.log("INDEX IS INVALID");
-        isValid = false;
+      isValid = this.validateBlock(blockToValidate, prevBlock);
+      if (!isValid) {
+        break;
       }
     }
 
     // validate genesis block
-    const genesisBlock = chainToValidate.at(0);
-    const isGenesisNonceValid = genesisBlock.nonce === 1;
-    const isGenesisHashValid = genesisBlock.hash === "Genesis";
-    const isGenesisPreviousHashValid = genesisBlock.prevHash === "Genesis";
-    const hasNoData = genesisBlock.data === null;
-
-    if (
-      !isGenesisNonceValid ||
-      !isGenesisHashValid ||
-      !isGenesisPreviousHashValid ||
-      !hasNoData
-    ) {
-      isValid = false;
-      console.log("GENESIS BLOCK NOT OK");
+    if (isValid) {
+      const genesisBlock = chainToValidate[0];
+      isValid = this.validateGenesisBlock(genesisBlock);
     }
     console.log("isValid", isValid);
+    return isValid;
+  }
+
+  validateGenesisBlock(genesisBlock) {
+    let isValid = true;
+    const isNonceValid = genesisBlock.nonce === 1;
+    const isHashValid = genesisBlock.hash === "Genesis";
+    const isPreviousHashValid = genesisBlock.prevHash === "Genesis";
+    const hasNoData = genesisBlock.data === null;
+
+    if (!isNonceValid || !isHashValid || !isPreviousHashValid || !hasNoData) {
+      isValid = false;
+    }
+
+    if (!isValid) {
+      console.log("GENESIS BLOCK NOT OK");
+    }
     return isValid;
   }
 
