@@ -1,6 +1,6 @@
 const sha256 = require("sha256");
-const { v4: uuidv4 } = require("uuid");
 const Block = require("./Block");
+const Shipment = require("./Shipment");
 
 function Blockchain() {
   this.chain = [Block.genesis()];
@@ -34,17 +34,7 @@ Blockchain.prototype.getLastBlock = function () {
 };
 
 Blockchain.prototype.createShipment = function (route, products) {
-  const shipment = {
-    shipmentId: uuidv4().split("-").join(""),
-    currentTime: new Date().toString(),
-    route,
-    sender: route[0],
-    currentLocation: route[0],
-    destination: route[route.length - 1],
-    delivered: false,
-    products,
-  };
-
+  const shipment = new Shipment(route, products);
   return shipment;
 };
 
