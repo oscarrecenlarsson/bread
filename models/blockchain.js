@@ -1,6 +1,5 @@
 const sha256 = require("sha256");
 const Block = require("./Block");
-const Shipment = require("./Shipment");
 
 function Blockchain() {
   this.chain = [Block.genesis()];
@@ -31,36 +30,6 @@ Blockchain.prototype.mineBlock = function () {
 
 Blockchain.prototype.getLastBlock = function () {
   return this.chain.at(-1);
-};
-
-Blockchain.prototype.createShipment = function (route, products) {
-  const shipment = new Shipment(route, products);
-  return shipment;
-};
-
-Blockchain.prototype.updateShipment = function (shipment) {
-  let finalized = false;
-
-  if (
-    shipment.route[shipment.route.indexOf(shipment.currentLocation) + 1] ===
-    shipment.destination
-  ) {
-    finalized = true;
-  }
-
-  const updatedShipment = {
-    shipmentId: shipment.shipmentId,
-    currentTime: new Date().toString(),
-    route: shipment.route,
-    sender: shipment.sender,
-    currentLocation:
-      shipment.route[shipment.route.indexOf(shipment.currentLocation) + 1],
-    destination: shipment.destination,
-    delivered: finalized,
-    products: shipment.products,
-  };
-
-  return updatedShipment;
 };
 
 Blockchain.prototype.createHash = function (prevHash, data, nonce) {

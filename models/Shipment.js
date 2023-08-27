@@ -12,14 +12,17 @@ class Shipment {
     this.products = products;
   }
 
-  update(currentLocation) {
-    if (
-      this.route.indexOf(currentLocation) + 1 ===
-      this.route.indexOf(this.destination)
-    ) {
-      this.delivered = true;
+  static update(shipment) {
+    const nextLocationIndex =
+      shipment.route.indexOf(shipment.currentLocation) + 1;
+
+    if (shipment.route[nextLocationIndex] === shipment.destination) {
+      shipment.delivered = true;
     }
-    this.currentLocation = currentLocation;
+    shipment.currentTime = new Date().toString();
+    shipment.currentLocation = shipment.route[nextLocationIndex];
+
+    return shipment;
   }
 }
 

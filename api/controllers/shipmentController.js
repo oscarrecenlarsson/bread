@@ -1,14 +1,10 @@
 const axios = require("axios");
-
+const Shipment = require("../../models/Shipment");
 function createAndBroadcastShipment(logisticsNode, req, res) {
-  const shipment = logisticsNode.blockchain.createShipment(
+  const shipment = logisticsNode.createShipment(
     req.body.route,
     req.body.products
   );
-
-  // add shipment to relevant lists at node
-  logisticsNode.addShipmentToPendingList(shipment);
-  logisticsNode.addShipmentToProcessAndSend(shipment);
 
   // register shipment at all network nodes (pendingList)
   logisticsNode.networkNodes.forEach(async (url) => {
@@ -37,11 +33,11 @@ async function SendShipmentToNextNode(logisticsNode, req, res) {
   const response = await axios.get(
     `${logisticsNode.nodeUrl}/api/node/shipments/shipment/${id}`
   );
-  const shipment = response.data.data;
+  const shipment = response.data.data; //NOT INSTANCE OF SHIPMENT
 
   logisticsNode.removeShipmentFromProcessAndSend(shipment);
 
-  const updatedShipment = logisticsNode.blockchain.updateShipment(shipment);
+  const updatedShipment = Shipment.update(shipment);
 
   const nextNodeUrl = updatedShipment.currentLocation;
 

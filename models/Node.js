@@ -1,5 +1,5 @@
 const Blockchain = require("./Blockchain");
-
+const Shipment = require("./Shipment");
 class Node {
   constructor() {
     this.blockchain = new Blockchain();
@@ -7,6 +7,13 @@ class Node {
     this.finalized = [];
     this.nodeUrl = process.argv[3];
     this.networkNodes = [];
+  }
+
+  createShipment(route, products) {
+    const shipment = new Shipment(route, products);
+    this.addShipmentToPendingList(shipment);
+    this.addShipmentToProcessAndSend(shipment);
+    return shipment;
   }
 
   addShipmentToPendingList(shipment) {
