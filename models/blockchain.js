@@ -52,7 +52,7 @@ class Blockchain {
   validateChain(blockChain) {
     let isValid = true;
 
-    for (i = 1; i < blockChain.length; i++) {
+    for (let i = 1; i < blockChain.length; i++) {
       const block = blockChain[i];
       const previousBlock = blockChain[i - 1];
       const hash = this.createHash(
