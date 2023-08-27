@@ -16,10 +16,8 @@ async function mineBlock(logisticsNode, req, res) {
 function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   const block = req.body.block;
   const lastBlock = logisticsNode.blockchain.getLastBlock();
-  const hashIsCorrect = lastBlock.hash === block.prevHash;
-  const hasCorrectIndex = lastBlock.index + 1 === block.index;
 
-  if (hashIsCorrect && hasCorrectIndex) {
+  if (logisticsNode.blockchain.validateBlock(block, lastBlock)) {
     logisticsNode.blockchain.chain.push(block);
     logisticsNode.blockchain.pendingList = [];
 
