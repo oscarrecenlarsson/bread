@@ -16,38 +16,38 @@ const {
   validateAndRegisterBlockAtNode,
 } = require("../controllers/blockController");
 
-module.exports = function (logisticsBC) {
+module.exports = function (logisticsNode) {
   router.get("/", (req, res) => {
-    getFullNode(logisticsBC, req, res);
+    getFullNode(logisticsNode, req, res);
   });
 
   router.post("/shipment", (req, res) => {
-    registerShipmentAtNode(logisticsBC, req, res);
+    registerShipmentAtNode(logisticsNode, req, res);
   });
 
   router
     .route("/shipments/shipment/:id")
     .get((req, res) => {
-      getProcessAndSendShipmentById(logisticsBC, req, res);
+      getProcessAndSendShipmentById(logisticsNode, req, res);
     })
     .patch(async (req, res) => {
-      SendShipmentToNextNode(logisticsBC, req, res);
+      SendShipmentToNextNode(logisticsNode, req, res);
     });
 
   router.post("/block", (req, res) => {
-    validateAndRegisterBlockAtNode(logisticsBC, req, res);
+    validateAndRegisterBlockAtNode(logisticsNode, req, res);
   });
 
   router.post("/node", (req, res) => {
-    registerNetworkNodeAtNode(logisticsBC, req, res);
+    registerNetworkNodeAtNode(logisticsNode, req, res);
   });
 
   router.post("/nodes", (req, res) => {
-    registerNetworkNodesAtNode(logisticsBC, req, res);
+    registerNetworkNodesAtNode(logisticsNode, req, res);
   });
 
   router.get("/consensus", (req, res) => {
-    synchronizeNode(logisticsBC, req, res);
+    synchronizeNode(logisticsNode, req, res);
   });
   return router;
 };

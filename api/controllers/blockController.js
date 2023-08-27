@@ -1,18 +1,9 @@
 const axios = require("axios");
 
-async function mineBlock(logisticsBC, req, res) {
-  const previousBlock = logisticsBC.getLastBlock();
-  const previousHash = previousBlock.hash;
-  const data = {
-    data: logisticsBC.pendingList,
-    index: previousBlock.index + 1,
-  };
-  const nonce = logisticsBC.proofOfWork(previousHash, data);
-  const hash = logisticsBC.createHash(previousHash, data, nonce);
+async function mineBlock(logisticsNode, req, res) {
+  const block = logisticsNode.blockchain.mineBlock();
 
-  const block = logisticsBC.createBlock(nonce, previousHash, hash);
-
-  logisticsBC.networkNodes.forEach(async (url) => {
+  logisticsNode.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/block`, { block: block });
   });
 
@@ -22,15 +13,15 @@ async function mineBlock(logisticsBC, req, res) {
   });
 }
 
-function validateAndRegisterBlockAtNode(logisticsBC, req, res) {
+function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   const block = req.body.block;
-  const lastBlock = logisticsBC.getLastBlock();
-  const hashIsCorrect = lastBlock.hash === block.previousHash;
+  const lastBlock = logisticsNode.blockchain.getLastBlock();
+  const hashIsCorrect = lastBlock.hash === block.prevHash;
   const hasCorrectIndex = lastBlock.index + 1 === block.index;
 
   if (hashIsCorrect && hasCorrectIndex) {
-    logisticsBC.chain.push(block);
-    logisticsBC.pendingList = [];
+    logisticsNode.blockchain.chain.push(block);
+    logisticsNode.blockchain.pendingList = [];
 
     res.status(201).json({ success: true, data: block });
   } else {
