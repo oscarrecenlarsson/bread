@@ -88,11 +88,13 @@ async function synchronizeNode(logisticsNode, req, res) {
       pendingList = NetworkPendingList;
     }
 
-    if (
-      !longestChain ||
-      (longestChain && !logisticsNode.blockchain.validateChain(longestChain))
+    if (!longestChain) {
+      console.log("No chain is longer than the current one");
+    } else if (
+      longestChain &&
+      !logisticsNode.blockchain.validateChain(longestChain)
     ) {
-      console.log("No replacement needed");
+      console.log("Longest chain is not valid");
     } else {
       logisticsNode.blockchain.chain = longestChain;
       logisticsNode.blockchain.pendingList = pendingList;
