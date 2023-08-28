@@ -65,7 +65,7 @@ const testDataChain = {
       ],
       nonce: 4764,
       hash: "0000cdcf49447a6f63d794cde272e0503a215fd60b472efa818e4a4030f162de",
-      prevHash: "Genesis",
+      prevHash: "Not Genesis", // WRONG PREVHASH
     },
   ],
 };

@@ -91,22 +91,22 @@ class Blockchain {
     );
 
     if (recreateHash !== blockToValidate.hash) {
-      console.log("recreate hash", recreateHash);
-      console.log("blockToValidate hash", blockToValidate.hash);
+      console.log("recreate hash:", recreateHash);
+      console.log("blockToValidate hash:", blockToValidate.hash);
       console.log("HASH IS INVALID");
       isValid = false;
     }
 
     if (blockToValidate.index !== prevBlock.index + 1) {
-      console.log("blockToValidate index", blockToValidate.index);
-      console.log("prevBlock index + 1", prevBlock.index + 1);
+      console.log("blockToValidate index:", blockToValidate.index);
+      console.log("prevBlock index + 1:", prevBlock.index + 1);
       console.log("INDEX IS INVALID");
       isValid = false;
     }
 
     if (blockToValidate.prevHash !== prevBlock.hash) {
-      console.log("blockToValidate prevHash", blockToValidate.prevHash);
-      console.log("prevBlock hash", prevBlock.hash);
+      console.log("blockToValidate prevHash:", blockToValidate.prevHash);
+      console.log("prevBlock hash:", prevBlock.hash);
       console.log("PREVHASH IS INVALID");
       isValid = false;
     }
