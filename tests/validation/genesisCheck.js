@@ -4,7 +4,7 @@ const blockchain = new Blockchain();
 //Check comment for changed genesis data
 //Feel free to try to change the properties index, nonce, hash or prevHash.
 
-const testDataChain = {
+const testGenesisChain = {
   chain: [
     {
       index: 1,
@@ -88,5 +88,5 @@ const testDataChain = {
 
 console.log(
   "Is genesis block valid: ",
-  blockchain.validateChain(testDataChain.chain)
+  blockchain.validateChain(testGenesisChain.chain)
 );

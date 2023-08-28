@@ -3,7 +3,7 @@ const blockchain = new Blockchain();
 
 //Check comment for changed index
 
-const testDataChain = {
+const testIndexChain = {
   chain: [
     {
       index: 1,
@@ -70,4 +70,4 @@ const testDataChain = {
   ],
 };
 
-console.log("Is index valid: ", blockchain.validateChain(testDataChain.chain));
+console.log("Is index valid: ", blockchain.validateChain(testIndexChain.chain));

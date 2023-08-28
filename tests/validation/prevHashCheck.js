@@ -3,7 +3,7 @@ const blockchain = new Blockchain();
 
 //Check comment for changed prevHash
 
-const testDataChain = {
+const testPrevHashChain = {
   chain: [
     {
       index: 1,
@@ -72,5 +72,5 @@ const testDataChain = {
 
 console.log(
   "Is prevHash valid: ",
-  blockchain.validateChain(testDataChain.chain)
+  blockchain.validateChain(testPrevHashChain.chain)
 );
