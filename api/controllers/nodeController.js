@@ -6,7 +6,7 @@ function getFullNode(logisticsNode, req, res) {
 
 async function createAndBroadcastNode(logisticsNode, req, res) {
   const nodeUrlToAdd = req.body.nodeUrl;
-  //check if nodeUrlToAdd is already in this nodes network list or is this nodes url
+  //check if nodeUrlToAdd is already in this node's network list or is this nodes url
   if (
     logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
     logisticsNode.nodeUrl !== nodeUrlToAdd
@@ -16,7 +16,7 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
       const body = { nodeUrl: nodeUrlToAdd };
       await axios.post(`${url}/api/node/node`, body);
     });
-    // add all network nodes, including this nodes url, to the new node
+    // add all network nodes, including this node's url, to the new node
     const body = {
       nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
     };
