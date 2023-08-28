@@ -63,7 +63,7 @@ class Blockchain {
       const genesisBlock = chainToValidate[0];
       isValid = this.validateGenesisBlock(genesisBlock);
     }
-    console.log("isValid", isValid);
+    console.log("isValid at end of validateChain", isValid);
     return isValid;
   }
 
@@ -84,24 +84,30 @@ class Blockchain {
 
   validateBlock(blockToValidate, prevBlock) {
     let isValid = true;
-    const hash = this.createHash(
+    const recreateHash = this.createHash(
       prevBlock.hash,
       blockToValidate.data,
       blockToValidate.nonce
     );
 
-    if (hash !== blockToValidate.hash) {
+    if (recreateHash !== blockToValidate.hash) {
+      console.log("recreate hash:", recreateHash);
+      console.log("blockToValidate hash:", blockToValidate.hash);
       console.log("HASH IS INVALID");
       isValid = false;
     }
 
-    if (blockToValidate.prevHash !== prevBlock.hash) {
-      console.log("prevhash IS INVALID");
+    if (blockToValidate.index !== prevBlock.index + 1) {
+      console.log("blockToValidate index:", blockToValidate.index);
+      console.log("prevBlock index + 1:", prevBlock.index + 1);
+      console.log("INDEX IS INVALID");
       isValid = false;
     }
 
-    if (blockToValidate.index !== prevBlock.index + 1) {
-      console.log("INDEX IS INVALID");
+    if (blockToValidate.prevHash !== prevBlock.hash) {
+      console.log("blockToValidate prevHash:", blockToValidate.prevHash);
+      console.log("prevBlock hash:", prevBlock.hash);
+      console.log("PREVHASH IS INVALID");
       isValid = false;
     }
 
