@@ -27,11 +27,16 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
 
     // sync chain and pendingList to the new node
     await axios.get(`${nodeUrlToAdd}/api/node/consensus`);
-  }
 
-  res
-    .status(201)
-    .json({ success: true, message: "New node added to the network" });
+    res
+      .status(201)
+      .json({ success: true, message: "New node added to the network" });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: "Node already in network nodes or is this node's URL",
+    });
+  }
 }
 
 function registerNetworkNodeAtNode(logisticsNode, req, res) {
