@@ -49,20 +49,22 @@ class Blockchain {
   validateChain(chainToValidate) {
     let isValid = true;
 
-    for (let i = 1; i < chainToValidate.length; i++) {
-      const blockToValidate = chainToValidate[i];
-      const prevBlock = chainToValidate[i - 1];
-      isValid = this.validateBlock(blockToValidate, prevBlock);
-      if (!isValid) {
-        break;
+    // validate genesis block
+    const genesisBlock = chainToValidate[0];
+    isValid = this.validateGenesisBlock(genesisBlock);
+
+    // validate the rest of the chain if genesis block is ok
+    if (isValid) {
+      for (let i = 1; i < chainToValidate.length; i++) {
+        const blockToValidate = chainToValidate[i];
+        const prevBlock = chainToValidate[i - 1];
+        isValid = this.validateBlock(blockToValidate, prevBlock);
+        if (!isValid) {
+          break;
+        }
       }
     }
 
-    // validate genesis block
-    if (isValid) {
-      const genesisBlock = chainToValidate[0];
-      isValid = this.validateGenesisBlock(genesisBlock);
-    }
     console.log("isValid at end of validateChain", isValid);
     return isValid;
   }
