@@ -1,10 +1,10 @@
 const axios = require("axios");
 
 async function mineBlock(logisticsNode, req, res) {
-  // mine block at this node
+  // mine block at node that got the call
   const block = logisticsNode.blockchain.mineBlock();
 
-  // validate and register block at all network nodes
+  // validate and register mined block at all of that nodes network nodes
   logisticsNode.networkNodes.forEach(async (url) => {
     await axios.post(`${url}/api/node/block`, { block: block });
   });
