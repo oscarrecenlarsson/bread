@@ -15,28 +15,37 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
     const body = {
       nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
     };
-    await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
-    // sync chain and pendingList to the new node
-    const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+    try {
+      await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
-    // add new node to networkNodes list for all other nodes in the network
-    const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
-      async (url) => {
-        const body = { nodeUrl: nodeUrlToAdd };
-        return axios.post(`${url}/api/node/node`, body);
-      }
-    );
+      // sync chain and pendingList to the new node
+      const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
 
-    // add new node to networkNodes list at this node
-    logisticsNode.networkNodes.push(nodeUrlToAdd);
+      // add new node to networkNodes list for all other nodes in the network
+      const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
+        async (url) => {
+          const body = { nodeUrl: nodeUrlToAdd };
+          return axios.post(`${url}/api/node/node`, body);
+        }
+      );
 
-    // resolve promises
-    await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
+      // resolve promises
+      await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
 
-    res
-      .status(201)
-      .json({ success: true, message: "New node added to the network" });
+      // add new node to networkNodes list at this node
+      logisticsNode.networkNodes.push(nodeUrlToAdd);
+
+      res
+        .status(201)
+        .json({ success: true, message: "New node added to the network" });
+    } catch (error) {
+      console.error(error.stack);
+      res.status(500).json({
+        success: false,
+        errorMessage: "An error occurred creating and broadcasting the node.",
+      });
+    }
   } else {
     res.status(400).json({
       success: false,
