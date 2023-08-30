@@ -75,26 +75,34 @@ async function SendShipmentToNextNode(logisticsNode, req, res) {
 
 async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
   const shipment = req.body.updatedShipment;
+  try {
+    // register updated shipment at all network nodes (pendingList)
+    await Promise.all(
+      logisticsNode.networkNodes.map(async (url) => {
+        axios.post(`${url}/api/node/shipment`, shipment);
+      })
+    );
 
-  logisticsNode.addShipmentToPendingList(shipment);
+    logisticsNode.addShipmentToPendingList(shipment);
 
-  if (!shipment.delivered) {
-    logisticsNode.addShipmentToProcessAndSend(shipment);
-  } else {
-    logisticsNode.addShipmentToFinalized(shipment);
+    if (!shipment.delivered) {
+      logisticsNode.addShipmentToProcessAndSend(shipment);
+    } else {
+      logisticsNode.addShipmentToFinalized(shipment);
+    }
+    res.status(201).json({
+      sucess: true,
+      message:
+        "shipment recieved at node and status broadcasted to the network",
+    });
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({
+      success: false,
+      errorMessage:
+        "An error occurred receiving broadcasting the updated shipment to the network.",
+    });
   }
-
-  // register updated shipment at all network nodes (pendingList)
-  await Promise.all(
-    logisticsNode.networkNodes.map(async (url) => {
-      axios.post(`${url}/api/node/shipment`, shipment);
-    })
-  );
-
-  res.status(201).json({
-    sucess: true,
-    message: "shipment recieved at node and status broadcasted to the network",
-  });
 }
 
 function getProcessAndSendShipmentById(logisticsNode, req, res) {
