@@ -1,15 +1,17 @@
 const axios = require("axios");
 const Shipment = require("../../models/Shipment");
-function createAndBroadcastShipment(logisticsNode, req, res) {
+async function createAndBroadcastShipment(logisticsNode, req, res) {
   const shipment = logisticsNode.createShipment(
     req.body.route,
     req.body.products
   );
 
   // register shipment at all network nodes (pendingList)
-  logisticsNode.networkNodes.forEach(async (url) => {
-    await axios.post(`${url}/api/node/shipment`, shipment);
-  });
+  await Promise.all(
+    logisticsNode.networkNodes.map(async (url) => {
+      axios.post(`${url}/api/node/shipment`, shipment);
+    })
+  );
 
   res.status(201).json({
     sucess: true,
