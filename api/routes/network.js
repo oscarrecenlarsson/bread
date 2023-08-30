@@ -17,8 +17,8 @@ module.exports = function (logisticsNode) {
 
   router
     .route("/shipment")
-    .post((req, res) => {
-      createAndBroadcastShipment(logisticsNode, req, res);
+    .post(async (req, res) => {
+      await createAndBroadcastShipment(logisticsNode, req, res);
     })
     .patch((req, res) => {
       recieveAndBroadcastUpdatedShipment(logisticsNode, req, res);
