@@ -11,22 +11,28 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
     logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
     logisticsNode.nodeUrl !== nodeUrlToAdd
   ) {
-    // add new node to networkNodes list for all other nodes in the network
-    logisticsNode.networkNodes.forEach(async (url) => {
-      const body = { nodeUrl: nodeUrlToAdd };
-      await axios.post(`${url}/api/node/node`, body);
-    });
     // add all network nodes, including this node's url, to the new node
     const body = {
       nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
     };
     await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
+    // sync chain and pendingList to the new node
+    const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+
+    // add new node to networkNodes list for all other nodes in the network
+    const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
+      async (url) => {
+        const body = { nodeUrl: nodeUrlToAdd };
+        return axios.post(`${url}/api/node/node`, body);
+      }
+    );
+
     // add new node to networkNodes list at this node
     logisticsNode.networkNodes.push(nodeUrlToAdd);
 
-    // sync chain and pendingList to the new node
-    await axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+    // resolve promises
+    await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
 
     res
       .status(201)
