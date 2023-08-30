@@ -5,30 +5,44 @@ function getFullNode(logisticsNode, req, res) {
 }
 
 async function createAndBroadcastNode(logisticsNode, req, res) {
-  // add new node to networkNodes list at current node
   const nodeUrlToAdd = req.body.nodeUrl;
-  if (logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1) {
+  //check if nodeUrlToAdd is already in this node's network list or is this nodes url
+  if (
+    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
+    logisticsNode.nodeUrl !== nodeUrlToAdd
+  ) {
+    // add all network nodes, including this node's url, to the new node
+    const body = {
+      nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
+    };
+    await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
+
+    // sync chain and pendingList to the new node
+    const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+
+    // add new node to networkNodes list for all other nodes in the network
+    const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
+      async (url) => {
+        const body = { nodeUrl: nodeUrlToAdd };
+        return axios.post(`${url}/api/node/node`, body);
+      }
+    );
+
+    // add new node to networkNodes list at this node
     logisticsNode.networkNodes.push(nodeUrlToAdd);
+
+    // resolve promises
+    await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
+
+    res
+      .status(201)
+      .json({ success: true, message: "New node added to the network" });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: "Node already in network nodes or is this node's URL",
+    });
   }
-  // add new node to networkNodes list for all other nodes in the network
-  logisticsNode.networkNodes.forEach(async (url) => {
-    const body = { nodeUrl: nodeUrlToAdd };
-
-    await axios.post(`${url}/api/node/node`, body);
-  });
-  // add all network nodes to the new node
-  const body = {
-    nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
-  };
-
-  await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
-
-  // sync chain and pendingList to the new node
-  await axios.get(`${nodeUrlToAdd}/api/node/consensus`);
-
-  res
-    .status(201)
-    .json({ success: true, message: "New node added to the network" });
 }
 
 function registerNetworkNodeAtNode(logisticsNode, req, res) {
