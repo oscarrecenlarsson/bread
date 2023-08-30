@@ -40,28 +40,37 @@ function registerShipmentAtNode(logisticsNode, req, res) {
 async function SendShipmentToNextNode(logisticsNode, req, res) {
   // get the shipment object by id
   const id = req.params["id"];
-  const response = await axios.get(
-    `${logisticsNode.nodeUrl}/api/node/shipments/shipment/${id}`
-  );
-  const shipment = response.data.data; //NOT INSTANCE OF SHIPMENT
 
-  logisticsNode.removeShipmentFromProcessAndSend(shipment);
+  try {
+    const response = await axios.get(
+      `${logisticsNode.nodeUrl}/api/node/shipments/shipment/${id}`
+    );
+    const shipment = response.data.data; //NOT INSTANCE OF SHIPMENT
 
-  const updatedShipment = Shipment.update(shipment);
+    logisticsNode.removeShipmentFromProcessAndSend(shipment);
 
-  const nextNodeUrl = updatedShipment.currentLocation;
+    const updatedShipment = Shipment.update(shipment);
 
-  // the updated shipment is recieved at the next node
-  // and then broadcasted to the network
-  await axios.patch(`${nextNodeUrl}/api/network/shipment`, {
-    updatedShipment: updatedShipment,
-  });
+    const nextNodeUrl = updatedShipment.currentLocation;
 
-  res.status(201).json({
-    success: true,
-    data: updatedShipment,
-    message: "Shipment has been sent to next node",
-  });
+    // the updated shipment is recieved at the next node
+    // and then broadcasted to the network
+    await axios.patch(`${nextNodeUrl}/api/network/shipment`, {
+      updatedShipment: updatedShipment,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: updatedShipment,
+      message: "Shipment has been sent to next node",
+    });
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({
+      success: false,
+      errorMessage: "An error occurred sending the shipment to the next node.",
+    });
+  }
 }
 
 async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
