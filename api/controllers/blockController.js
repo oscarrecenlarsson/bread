@@ -29,7 +29,7 @@ function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   } else {
     res.status(400).json({
       success: false,
-      errorMessage: "Blocket är inte godkänt",
+      errorMessage: "The block is not valid",
       data: block,
     });
   }
