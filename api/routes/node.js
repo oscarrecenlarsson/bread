@@ -31,7 +31,7 @@ module.exports = function (logisticsNode) {
       getProcessAndSendShipmentById(logisticsNode, req, res);
     })
     .patch(async (req, res) => {
-      SendShipmentToNextNode(logisticsNode, req, res);
+      await SendShipmentToNextNode(logisticsNode, req, res);
     });
 
   router.post("/block", (req, res) => {
@@ -46,8 +46,8 @@ module.exports = function (logisticsNode) {
     registerNetworkNodesAtNode(logisticsNode, req, res);
   });
 
-  router.get("/consensus", (req, res) => {
-    synchronizeNode(logisticsNode, req, res);
+  router.get("/consensus", async (req, res) => {
+    await synchronizeNode(logisticsNode, req, res);
   });
   return router;
 };

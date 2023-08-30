@@ -15,28 +15,37 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
     const body = {
       nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
     };
-    await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
-    // sync chain and pendingList to the new node
-    const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+    try {
+      await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
 
-    // add new node to networkNodes list for all other nodes in the network
-    const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
-      async (url) => {
-        const body = { nodeUrl: nodeUrlToAdd };
-        return axios.post(`${url}/api/node/node`, body);
-      }
-    );
+      // sync chain and pendingList to the new node
+      const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
 
-    // add new node to networkNodes list at this node
-    logisticsNode.networkNodes.push(nodeUrlToAdd);
+      // add new node to networkNodes list for all other nodes in the network
+      const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
+        async (url) => {
+          const body = { nodeUrl: nodeUrlToAdd };
+          return axios.post(`${url}/api/node/node`, body);
+        }
+      );
 
-    // resolve promises
-    await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
+      // resolve promises
+      await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
 
-    res
-      .status(201)
-      .json({ success: true, message: "New node added to the network" });
+      // add new node to networkNodes list at this node
+      logisticsNode.networkNodes.push(nodeUrlToAdd);
+
+      res
+        .status(201)
+        .json({ success: true, message: "New node added to the network" });
+    } catch (error) {
+      console.error(error.stack);
+      res.status(500).json({
+        success: false,
+        errorMessage: "An error occurred creating and broadcasting the node.",
+      });
+    }
   } else {
     res.status(400).json({
       success: false,
@@ -89,36 +98,44 @@ async function synchronizeNode(logisticsNode, req, res) {
   let longestChain = null;
   let pendingList = null;
 
-  for (const networkNodeUrl of logisticsNode.networkNodes) {
-    // get the network node and set relevant variables based on that node
-    const response = await axios.get(`${networkNodeUrl}/api/node`);
-    const NetworkChain = response.data.blockchain.chain;
-    const NetworkPendingList = response.data.blockchain.pendingList;
+  try {
+    for (const networkNodeUrl of logisticsNode.networkNodes) {
+      // get the network node and set relevant variables based on that node
+      const response = await axios.get(`${networkNodeUrl}/api/node`);
+      const NetworkChain = response.data.blockchain.chain;
+      const NetworkPendingList = response.data.blockchain.pendingList;
 
-    // check if the network node has a longer chain than the node we want to sync
-    if (NetworkChain.length > maxLength) {
-      maxLength = NetworkChain.length;
-      longestChain = NetworkChain;
-      pendingList = NetworkPendingList;
-    }
+      // check if the network node has a longer chain than the node we want to sync
+      if (NetworkChain.length > maxLength) {
+        maxLength = NetworkChain.length;
+        longestChain = NetworkChain;
+        pendingList = NetworkPendingList;
+      }
 
-    if (!longestChain) {
-      console.log("No chain is longer than the current one");
-    } else if (
-      // if so, check if it is valid
-      longestChain &&
-      !logisticsNode.blockchain.validateChain(longestChain)
-    ) {
-      console.log("Longest chain is not valid");
-    } else {
-      // the network node's chain is longer and valid so the node we want to sync is updated
-      logisticsNode.blockchain.chain = longestChain;
-      logisticsNode.blockchain.pendingList = pendingList;
+      if (!longestChain) {
+        console.log("No chain is longer than the current one");
+      } else if (
+        // if so, check if it is valid
+        longestChain &&
+        !logisticsNode.blockchain.validateChain(longestChain)
+      ) {
+        console.log("Longest chain is not valid");
+      } else {
+        // the network node's chain is longer and valid so the node we want to sync is updated
+        logisticsNode.blockchain.chain = longestChain;
+        logisticsNode.blockchain.pendingList = pendingList;
+      }
     }
+    res
+      .status(200)
+      .json({ success: true, message: "Node is synchronized and up to date" });
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({
+      success: false,
+      errorMessage: "An error occurred trying to synchronize the node.",
+    });
   }
-  res
-    .status(200)
-    .json({ success: true, message: "Node is synchronized and up to date" });
 }
 
 module.exports = {

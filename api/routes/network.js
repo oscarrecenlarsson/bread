@@ -6,7 +6,7 @@ const {
   recieveAndBroadcastUpdatedShipment,
 } = require("../controllers/shipmentController");
 const { createAndBroadcastNode } = require("../controllers/nodeController");
-const { mineBlock } = require("../controllers/blockController");
+const { mineAndBroadcastBlock } = require("../controllers/blockController");
 
 module.exports = function (logisticsNode) {
   router.use("/api/node", node(logisticsNode));
@@ -25,7 +25,7 @@ module.exports = function (logisticsNode) {
     });
 
   router.post("/block", async (req, res) => {
-    mineBlock(logisticsNode, req, res);
+    await mineAndBroadcastBlock(logisticsNode, req, res);
   });
   return router;
 };
