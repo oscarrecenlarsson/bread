@@ -25,7 +25,7 @@ module.exports = function (logisticsNode) {
     });
 
   router.post("/block", async (req, res) => {
-    mineAndBroadcastBlock(logisticsNode, req, res);
+    await mineAndBroadcastBlock(logisticsNode, req, res);
   });
   return router;
 };
