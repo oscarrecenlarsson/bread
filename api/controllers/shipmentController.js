@@ -56,7 +56,7 @@ async function SendShipmentToNextNode(logisticsNode, req, res) {
   });
 }
 
-function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
+async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
   const shipment = req.body.updatedShipment;
 
   logisticsNode.addShipmentToPendingList(shipment);
@@ -68,9 +68,11 @@ function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
   }
 
   // register updated shipment at all network nodes (pendingList)
-  logisticsNode.networkNodes.forEach(async (url) => {
-    await axios.post(`${url}/api/node/shipment`, shipment);
-  });
+  await Promise.all(
+    logisticsNode.networkNodes.map(async (url) => {
+      axios.post(`${url}/api/node/shipment`, shipment);
+    })
+  );
 
   res.status(201).json({
     sucess: true,
