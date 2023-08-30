@@ -1,20 +1,30 @@
 const axios = require("axios");
 
-async function mineBlock(logisticsNode, req, res) {
+async function mineAndBroadcastBlock(logisticsNode, req, res) {
   // mine block at node that got the call
   const block = logisticsNode.blockchain.mineBlock();
 
-  // validate and register mined block at all of that nodes network nodes
-  await Promise.all(
-    logisticsNode.networkNodes.map(async (url) => {
-      return axios.post(`${url}/api/node/block`, { block: block });
-    })
-  );
+  try {
+    // validate and register mined block at all of that nodes network nodes
+    await Promise.all(
+      logisticsNode.networkNodes.map(async (url) => {
+        return axios.post(`${url}/api/node/block`, { block: block });
+      })
+    );
 
-  res.status(200).json({
-    success: true,
-    data: block,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Block has been mined and registered at all network nodes",
+      data: block,
+    });
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({
+      success: false,
+      errorMessage:
+        "An error occurred registering the block to the network nodes.",
+    });
+  }
 }
 
 function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
@@ -35,4 +45,4 @@ function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   }
 }
 
-module.exports = { mineBlock, validateAndRegisterBlockAtNode };
+module.exports = { mineAndBroadcastBlock, validateAndRegisterBlockAtNode };
