@@ -89,10 +89,9 @@ async function synchronizeNode(logisticsNode, req, res) {
   let longestChain = null;
   let pendingList = null;
 
-  logisticsNode.networkNodes.forEach(async (networkNodeUrl) => {
+  for (const networkNodeUrl of logisticsNode.networkNodes) {
     // get the network node
     const response = await axios.get(`${networkNodeUrl}/api/node`);
-
     const NetworkChain = response.data.blockchain.chain;
     const NetworkPendingList = response.data.blockchain.pendingList;
 
@@ -113,7 +112,7 @@ async function synchronizeNode(logisticsNode, req, res) {
       logisticsNode.blockchain.chain = longestChain;
       logisticsNode.blockchain.pendingList = pendingList;
     }
-  });
+  }
   res
     .status(200)
     .json({ success: true, message: "Node is synchronized and up to date" });
