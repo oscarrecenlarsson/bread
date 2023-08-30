@@ -20,8 +20,8 @@ module.exports = function (logisticsNode) {
     .post(async (req, res) => {
       await createAndBroadcastShipment(logisticsNode, req, res);
     })
-    .patch((req, res) => {
-      recieveAndBroadcastUpdatedShipment(logisticsNode, req, res);
+    .patch(async (req, res) => {
+      await recieveAndBroadcastUpdatedShipment(logisticsNode, req, res);
     });
 
   router.post("/block", async (req, res) => {
