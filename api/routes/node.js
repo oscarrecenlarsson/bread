@@ -31,7 +31,7 @@ module.exports = function (logisticsNode) {
       getProcessAndSendShipmentById(logisticsNode, req, res);
     })
     .patch(async (req, res) => {
-      SendShipmentToNextNode(logisticsNode, req, res);
+      await SendShipmentToNextNode(logisticsNode, req, res);
     });
 
   router.post("/block", (req, res) => {
