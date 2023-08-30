@@ -6,21 +6,29 @@ async function createAndBroadcastShipment(logisticsNode, req, res) {
     req.body.products
   );
 
-  // register shipment at all network nodes (pendingList)
-  await Promise.all(
-    logisticsNode.networkNodes.map(async (url) => {
-      axios.post(`${url}/api/node/shipment`, shipment);
-    })
-  );
+  try {
+    // register shipment at all network nodes (pendingList)
+    await Promise.all(
+      logisticsNode.networkNodes.map(async (url) => {
+        axios.post(`${url}/api/node/shipment`, shipment);
+      })
+    );
 
-  res.status(201).json({
-    sucess: true,
-    data: {
-      shipmentId: shipment.shipmentId,
-      currentLocation: shipment.currentLocation,
-    },
-    message: "Shipment has been created and broadcasted to the network",
-  });
+    res.status(201).json({
+      sucess: true,
+      data: {
+        shipmentId: shipment.shipmentId,
+        currentLocation: shipment.currentLocation,
+      },
+      message: "Shipment has been created and broadcasted to the network",
+    });
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({
+      success: false,
+      errorMessage: "An error occurred creating and broadcasting the shipment.",
+    });
+  }
 }
 
 function registerShipmentAtNode(logisticsNode, req, res) {
