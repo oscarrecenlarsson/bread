@@ -113,13 +113,13 @@ async function synchronizeNode(logisticsNode, req, res) {
       }
 
       if (!longestChain) {
-        console.log("No chain is longer than the current one");
+        console.log("The network chain is not longer than the current one");
       } else if (
         // if so, check if it is valid
         longestChain &&
         !logisticsNode.blockchain.validateChain(longestChain)
       ) {
-        console.log("Longest chain is not valid");
+        console.log("The network chain is longer but is not valid");
       } else {
         // the network node's chain is longer and valid so the node we want to sync is updated
         logisticsNode.blockchain.chain = longestChain;
