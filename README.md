@@ -19,4 +19,6 @@ Min tanke är att skapa en logistik-blockchain med ett REST-api för att hantera
 Exempel-request för att lägga till en ny shipment
 {"route": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"], "products": ["prod1", "prod2", "prod3"]}
 
+En shipment kan bara skapas på shipment.sender dvs route[0].
+
 Jag har lagt till en postman collection json du kan testköra också
