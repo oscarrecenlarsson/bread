@@ -1,24 +1,12 @@
-# node-assignment-2
+# Lia 1
 
-I den sista inlämningsuppgiften ska ni ta fram en blockchain lösning som inte hanterar kryptovalutor. Utan istället ska ni få fria händer att skapa en blockchain lösning för andra typer av behov.
+Skapa en valfri logistikkedja med valfri godtycklig blockkedja
+Exempelvis
 
-För G krävs följande:
+En bonde skördar vete.
+Kvarnen maler till mjöl
+Bagaren bakar bröd
+Återförsäljare säljer
+Varje led ovan är en användare i vår blockkedja och samtliga delar har en egen kvalitetstämpel “Mjölnaren – Nu har jag tagit emot vetet från bonden och malt vetet till mjöl på det här specifika sättet och satt min egna kvalitetstämpel i den här kedjan”.
 
-Användning av hashning via SHA256
-ProofOfWork
-Manipulering av blockkedjan via ett API
-Blockkedjan ska ha stöd för minst 3 noder i ett distribuerat nätverk.
-
-För VG krävs:
-
-Att “best practices” används, vilket innebär att Single Responsible Principles samt Separations Of Concern ska användas.
-Detta betyder till exempel att logiken för ett API ska separeras i Controller funktioner, Routing funktioner.
-
-Min tanke är att skapa en logistik-blockchain med ett REST-api för att hantera försändelser mellan olika noder.
-
-Exempel-request för att lägga till en ny shipment
-{"route": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"], "products": ["prod1", "prod2", "prod3"]}
-
-En shipment kan bara skapas på shipment.sender dvs route[0].
-
-Jag har lagt till en postman collection json du kan testköra också
+En kund som köper brödet ska alltså kunna följa brödet tillbaka till bagaren till kvarnen till bonden så kan kunden själv se att detta är en kedja de kan stödja och stå bakom.
