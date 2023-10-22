@@ -1,5 +1,14 @@
-class Block {
-  constructor({ nonce, data, prevHash, hash, index }) {
+import { IBlock, IBlockInput } from "./BlockchainInterfaces";
+
+class Block implements IBlock {
+  index;
+  timestamp: number;
+  data: any;
+  nonce: number;
+  hash: string;
+  prevHash: string;
+
+  constructor({ nonce, data, prevHash, hash, index }: IBlockInput) {
     this.index = index;
     this.timestamp = Date.now();
     this.data = data;
