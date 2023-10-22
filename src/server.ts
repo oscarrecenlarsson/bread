@@ -1,11 +1,15 @@
+import sourceMapSupport from "source-map-support";
 const express = require("express");
-
-const Node = require("./models/Node");
+const BlockchainNode = require("./models/BlockchainNode");
 const network = require("./api/routes/network");
 const node = require("./api/routes/node");
 
+sourceMapSupport.install();
+
+console.log("sasfd");
+
 const app = express();
-const logisticsNode = new Node();
+const logisticsNode = new BlockchainNode();
 const PORT = process.argv[2];
 
 // middleware

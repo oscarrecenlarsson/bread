@@ -1,6 +1,6 @@
 const Blockchain = require("./Blockchain");
 const Shipment = require("./Shipment");
-class Node {
+class BlockchainNode {
   constructor() {
     this.blockchain = new Blockchain();
     this.processAndSend = [];
@@ -35,4 +35,4 @@ class Node {
   }
 }
 
-module.exports = Node;
+module.exports = BlockchainNode;

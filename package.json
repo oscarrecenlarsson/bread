@@ -2,13 +2,13 @@
   "name": "blockchain",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "node-1": "nodemon server.js 3000 http://localhost:3000",
-    "node-2": "nodemon server.js 3001 http://localhost:3001",
-    "node-3": "nodemon server.js 3002 http://localhost:3002",
-    "all-nodes": "concurrently \"npm run node-1\" \"npm run node-2\" \"npm run node-3\""
+    "start:ts": "tsc --watch",
+    "node-1": "nodemon ./build/server.js 3000 http://localhost:3000",
+    "node-2": "nodemon ./build/server.js 3001 http://localhost:3001",
+    "node-3": "nodemon ./build/server.js 3002 http://localhost:3002",
+    "all-nodes": "concurrently \"npm run start:ts\" \"npm run node-1\" \"npm run node-2\" \"npm run node-3\""
   },
   "keywords": [],
   "author": "",
@@ -20,7 +20,9 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.8.7",
     "concurrently": "^8.2.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "typescript": "^5.2.2"
   }
 }
