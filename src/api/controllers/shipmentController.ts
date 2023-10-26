@@ -1,10 +1,13 @@
-const axios = require("axios");
-const Shipment = require("../../models/Shipment");
+import axios from "axios";
+import Shipment from "../../models/Shipment";
+
 async function createAndBroadcastShipment(logisticsNode, req, res) {
   const shipment = logisticsNode.createShipment(
     req.body.route,
     req.body.products
   );
+
+  console.log(shipment);
 
   try {
     // register shipment at all network nodes (pendingList)
@@ -113,7 +116,7 @@ function getProcessAndSendShipmentById(logisticsNode, req, res) {
   res.status(201).json({ success: true, data: shipment });
 }
 
-module.exports = {
+export {
   createAndBroadcastShipment,
   registerShipmentAtNode,
   SendShipmentToNextNode,

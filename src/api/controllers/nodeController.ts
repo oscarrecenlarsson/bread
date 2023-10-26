@@ -1,4 +1,5 @@
-const axios = require("axios");
+import axios from "axios";
+//import NodeCall from "../../models/interfaces/Api";
 
 function getFullNode(logisticsNode, req, res) {
   res.status(200).json(logisticsNode);
@@ -40,7 +41,7 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
         .status(201)
         .json({ success: true, message: "New node added to the network" });
     } catch (error) {
-      console.error(error.stack);
+      console.error(error); //can't log error.stack
       res.status(500).json({
         success: false,
         errorMessage: "An error occurred creating and broadcasting the node.",
@@ -138,7 +139,7 @@ async function synchronizeNode(logisticsNode, req, res) {
   }
 }
 
-module.exports = {
+export {
   getFullNode,
   createAndBroadcastNode,
   registerNetworkNodeAtNode,

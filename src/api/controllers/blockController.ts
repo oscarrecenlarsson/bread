@@ -1,7 +1,13 @@
-const axios = require("axios");
+import { Response } from "express";
+import Node from "../../models/classes/Node";
+//import NodeCall from "../../models/interfaces/Api";
+
+import axios from "axios";
 
 async function mineAndBroadcastBlock(logisticsNode, req, res) {
   // mine block at node that got the call
+  console.log("MINE BLOCK IS RUNNING");
+
   const block = logisticsNode.blockchain.mineBlock();
 
   try {
@@ -18,7 +24,7 @@ async function mineAndBroadcastBlock(logisticsNode, req, res) {
       data: block,
     });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage:
@@ -45,4 +51,4 @@ function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
   }
 }
 
-module.exports = { mineAndBroadcastBlock, validateAndRegisterBlockAtNode };
+export { mineAndBroadcastBlock, validateAndRegisterBlockAtNode };

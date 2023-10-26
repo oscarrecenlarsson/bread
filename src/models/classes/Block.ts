@@ -1,14 +1,14 @@
-import { IBlock, IBlockInput } from "./BlockchainInterfaces";
+import BlockInput from "../interfaces/Block";
 
-class Block implements IBlock {
-  index;
+export default class Block {
+  index: number;
   timestamp: number;
   data: any;
   nonce: number;
   hash: string;
   prevHash: string;
 
-  constructor({ nonce, data, prevHash, hash, index }: IBlockInput) {
+  constructor({ nonce, data, prevHash, hash, index }: BlockInput) {
     this.index = index;
     this.timestamp = Date.now();
     this.data = data;
@@ -26,5 +26,3 @@ class Block implements IBlock {
     return new this({ nonce, data, prevHash, hash, index });
   }
 }
-
-module.exports = Block;

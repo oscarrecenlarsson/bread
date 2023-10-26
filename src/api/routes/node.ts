@@ -1,22 +1,21 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const {
+import {
   registerNetworkNodeAtNode,
   registerNetworkNodesAtNode,
   getFullNode,
   synchronizeNode,
-} = require("../controllers/nodeController");
-const {
+} from "../controllers/nodeController";
+import {
   registerShipmentAtNode,
   SendShipmentToNextNode,
   getProcessAndSendShipmentById,
-} = require("../controllers/shipmentController");
-const {
-  validateAndRegisterBlockAtNode,
-} = require("../controllers/blockController");
+} from "../controllers/shipmentController";
+import { validateAndRegisterBlockAtNode } from "../controllers/blockController";
+import Node from "../../models/classes/Node";
 
-module.exports = function (logisticsNode) {
+export default function (logisticsNode: Node) {
   router.get("/", (req, res) => {
     getFullNode(logisticsNode, req, res);
   });
@@ -50,4 +49,4 @@ module.exports = function (logisticsNode) {
     await synchronizeNode(logisticsNode, req, res);
   });
   return router;
-};
+}

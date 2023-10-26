@@ -1,12 +1,17 @@
-const sha256 = require("sha256");
-const Block = require("./Block");
+import BlockInput from "../interfaces/Block";
+import Block from "./Block";
+import sha256 from "sha256";
+import Shipment from "./Shipment";
 
-class Blockchain {
+export default class Blockchain {
+  chain: Block[];
+  pendingList: Shipment[];
+
   constructor() {
     this.chain = [Block.genesis()];
     this.pendingList = [];
   }
-  createBlock({ nonce, data, prevHash, hash, index }) {
+  createBlock({ nonce, data, prevHash, hash, index }: BlockInput): Block {
     const newBlock = new Block({ nonce, data, prevHash, hash, index });
     return newBlock;
   }
@@ -29,13 +34,13 @@ class Blockchain {
     return this.chain.at(-1);
   }
 
-  createHash(prevHash, data, nonce) {
+  createHash(prevHash: string, data: any, nonce: number): string {
     const stringToHash = prevHash + JSON.stringify(data) + nonce.toString();
     const hash = sha256(stringToHash);
     return hash;
   }
 
-  proofOfWork(prevHash, data) {
+  proofOfWork(prevHash: string, data: any): number {
     let nonce = 0;
     let hash = this.createHash(prevHash, data, nonce);
 
@@ -46,7 +51,7 @@ class Blockchain {
     return nonce;
   }
 
-  validateChain(chainToValidate) {
+  validateChain(chainToValidate: Block[]): Boolean {
     let isValid = true;
 
     // validate genesis block
@@ -69,7 +74,7 @@ class Blockchain {
     return isValid;
   }
 
-  validateGenesisBlock(genesisBlock) {
+  validateGenesisBlock(genesisBlock: Block): boolean {
     let isValid = true;
     const isNonceValid = genesisBlock.nonce === 1;
     const isHashValid = genesisBlock.hash === "Genesis";
@@ -84,7 +89,7 @@ class Blockchain {
     return isValid;
   }
 
-  validateBlock(blockToValidate, prevBlock) {
+  validateBlock(blockToValidate: Block, prevBlock: Block): boolean {
     let isValid = true;
     const recreateHash = this.createHash(
       prevBlock.hash,
@@ -116,5 +121,3 @@ class Blockchain {
     return isValid;
   }
 }
-
-module.exports = Blockchain;

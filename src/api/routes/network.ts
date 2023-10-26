@@ -1,14 +1,15 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const node = require("./node");
-const {
+import node from "./node";
+import {
   createAndBroadcastShipment,
   recieveAndBroadcastUpdatedShipment,
-} = require("../controllers/shipmentController");
-const { createAndBroadcastNode } = require("../controllers/nodeController");
-const { mineAndBroadcastBlock } = require("../controllers/blockController");
+} from "../controllers/shipmentController";
+import { createAndBroadcastNode } from "../controllers/nodeController";
+import { mineAndBroadcastBlock } from "../controllers/blockController";
+import Node from "../../models/classes/Node";
 
-module.exports = function (logisticsNode) {
+export default function (logisticsNode: Node) {
   router.use("/api/node", node(logisticsNode));
 
   router.post("/node", async (req, res) => {
@@ -28,4 +29,4 @@ module.exports = function (logisticsNode) {
     await mineAndBroadcastBlock(logisticsNode, req, res);
   });
   return router;
-};
+}
