@@ -8,7 +8,8 @@
     "node-1": "nodemon --delay 2000 ./build/server.js 3000 http://localhost:3000 Farmer",
     "node-2": "nodemon --delay 2000 ./build/server.js 3001 http://localhost:3001 Mill",
     "node-3": "nodemon --delay 2000 ./build/server.js 3002 http://localhost:3002 Bakery",
-    "all-nodes": "concurrently \"npm run start:ts\" \"npm run node-1\" \"npm run node-2\" \"npm run node-3\""
+    "node-4": "nodemon --delay 2000 ./build/server.js 3003 http://localhost:3003 Store",
+    "all-nodes": "concurrently \"npm run start:ts\" \"npm run node-1\" \"npm run node-2\" \"npm run node-3\" \"npm run node-4\""
   },
   "keywords": [],
   "author": "",
