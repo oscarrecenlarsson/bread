@@ -1,4 +1,4 @@
-import ShipmentInput from "../interfaces/Shipment";
+import { Product } from "../interfaces/Shipment";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
 
@@ -19,9 +19,8 @@ export default class BlockchainNode {
     this.networkNodes = [];
   }
 
-  createShipment(route: string[], products: string[]) {
-    //ShipmentInput
-    const shipment = new Shipment({ route, products });
+  createShipment(route: string[], products: Product[]): Shipment {
+    const shipment = new Shipment(route, products);
     this.addShipmentToPendingList(shipment);
     this.addShipmentToProcessAndSend(shipment);
     return shipment;

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import ShipmentInput from "../interfaces/Shipment";
+import { Product } from "../interfaces/Shipment";
 
 export default class Shipment {
   shipmentId: string;
@@ -9,11 +9,11 @@ export default class Shipment {
   currentLocation: string;
   destination: string; //enum of farmer, mill, bakery and store?
   delivered: boolean;
-  products: string[]; //product array
+  products: Product[]; //product array
   //{productName:wheat, batchId:123}
   //{productName: flour, batchId:789, ingredients: [{productName: wheat, batchId: 123}]}
 
-  constructor({ route, products }: ShipmentInput) {
+  constructor(route: string[], products: Product[]) {
     this.shipmentId = uuidv4().split("-").join("");
     this.currentTime = new Date().toString();
     this.route = route;
