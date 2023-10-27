@@ -7,12 +7,15 @@ export default class Node {
   processAndSend: Shipment[];
   finalized: Shipment[];
   nodeUrl: string;
+  nodeName: string;
   networkNodes: string[];
-  constructor() {
+
+  constructor(nodeUrl, nodeName) {
     this.blockchain = new Blockchain();
     this.processAndSend = [];
     this.finalized = [];
-    this.nodeUrl = process.argv[3]; //enum names, farmer, mill, bakery, store?
+    this.nodeUrl = nodeUrl;
+    this.nodeName = nodeName; //enum names, farmer, mill, bakery, store?
     this.networkNodes = [];
   }
 
