@@ -1,10 +1,10 @@
 import axios from "axios";
 import Shipment from "../../models/classes/Shipment";
 import { Request, Response } from "express";
-import Node from "../../models/classes/Node";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 
 async function createAndBroadcastShipment(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -41,7 +41,7 @@ async function createAndBroadcastShipment(
 }
 
 function registerShipmentAtNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -51,7 +51,7 @@ function registerShipmentAtNode(
 }
 
 async function SendShipmentToNextNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -91,7 +91,7 @@ async function SendShipmentToNextNode(
 }
 
 async function recieveAndBroadcastUpdatedShipment(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -127,7 +127,7 @@ async function recieveAndBroadcastUpdatedShipment(
 }
 
 function getProcessAndSendShipmentById(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {

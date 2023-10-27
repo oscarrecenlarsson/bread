@@ -13,9 +13,9 @@ import {
   getProcessAndSendShipmentById,
 } from "../controllers/shipmentController";
 import { validateAndRegisterBlockAtNode } from "../controllers/blockController";
-import Node from "../../models/classes/Node";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 
-export default function (logisticsNode: Node) {
+export default function (logisticsNode: BlockchainNode) {
   router.get("/", (req, res) => {
     getFullNode(logisticsNode, req, res);
   });

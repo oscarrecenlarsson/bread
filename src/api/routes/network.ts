@@ -7,9 +7,9 @@ import {
 } from "../controllers/shipmentController";
 import { createAndBroadcastNode } from "../controllers/nodeController";
 import { mineAndBroadcastBlock } from "../controllers/blockController";
-import Node from "../../models/classes/Node";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 
-export default function (logisticsNode: Node) {
+export default function (logisticsNode: BlockchainNode) {
   router.use("/api/node", node(logisticsNode));
 
   router.post("/node", async (req, res) => {

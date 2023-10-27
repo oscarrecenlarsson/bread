@@ -2,7 +2,7 @@ import ShipmentInput from "../interfaces/Shipment";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
 
-export default class Node {
+export default class BlockchainNode {
   blockchain: Blockchain;
   processAndSend: Shipment[];
   finalized: Shipment[];

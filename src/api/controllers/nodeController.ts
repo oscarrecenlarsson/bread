@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
 import axios from "axios";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 //import NodeCall from "../../models/interfaces/Api";
 
-function getFullNode(logisticsNode: Node, req: Request, res: Response) {
+function getFullNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
   res.status(200).json(logisticsNode);
 }
 
 async function createAndBroadcastNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -61,7 +66,7 @@ async function createAndBroadcastNode(
 }
 
 function registerNetworkNodeAtNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -83,7 +88,7 @@ function registerNetworkNodeAtNode(
 }
 
 function registerNetworkNodesAtNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -107,7 +112,7 @@ function registerNetworkNodesAtNode(
 }
 
 async function synchronizeNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {

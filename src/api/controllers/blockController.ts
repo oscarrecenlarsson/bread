@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import Node from "../../models/classes/Node";
 //import NodeCall from "../../models/interfaces/Api";
 
 import axios from "axios";
 import { logisticsNode } from "../../server";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 
 async function mineAndBroadcastBlock(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {
@@ -39,7 +39,7 @@ async function mineAndBroadcastBlock(
 }
 
 function validateAndRegisterBlockAtNode(
-  logisticsNode: Node,
+  logisticsNode: BlockchainNode,
   req: Request,
   res: Response
 ) {

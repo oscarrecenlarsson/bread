@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import Node from "../classes/Node";
+import BlockchainNode from "../classes/BlockchainNode";
 
 export default interface NodeCall {
-  node: Node;
+  node: BlockchainNode;
   req: Request;
   res: Response;
 }
