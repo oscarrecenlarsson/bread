@@ -30,8 +30,8 @@ export default class Blockchain {
     return newBlock;
   }
 
-  getLastBlock() {
-    return this.chain.at(-1);
+  getLastBlock(): Block {
+    return this.chain[this.chain.length - 1];
   }
 
   createHash(prevHash: string, data: any, nonce: number): string {

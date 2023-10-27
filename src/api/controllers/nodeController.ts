@@ -1,11 +1,16 @@
+import { Request, Response } from "express";
 import axios from "axios";
 //import NodeCall from "../../models/interfaces/Api";
 
-function getFullNode(logisticsNode, req, res) {
+function getFullNode(logisticsNode: Node, req: Request, res: Response) {
   res.status(200).json(logisticsNode);
 }
 
-async function createAndBroadcastNode(logisticsNode, req, res) {
+async function createAndBroadcastNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const nodeUrlToAdd = req.body.nodeUrl;
   //check if nodeUrlToAdd is already in this node's network list or is this nodes url
   if (
@@ -55,7 +60,11 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
   }
 }
 
-function registerNetworkNodeAtNode(logisticsNode, req, res) {
+function registerNetworkNodeAtNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   // add node to networkNodes list as long as it is not already there
   // or the url matches the current nodes url
 
@@ -73,13 +82,17 @@ function registerNetworkNodeAtNode(logisticsNode, req, res) {
     .json({ success: true, message: "New network node added at node" });
 }
 
-function registerNetworkNodesAtNode(logisticsNode, req, res) {
+function registerNetworkNodesAtNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   // add nodes to networkNodes list as long as they are not already there
   // or any of the URLs matches the current nodes URL
 
   const allNodes = req.body.nodes;
 
-  allNodes.forEach((url) => {
+  allNodes.forEach((url: string) => {
     if (
       logisticsNode.networkNodes.indexOf(url) === -1 &&
       logisticsNode.nodeUrl !== url
@@ -93,7 +106,11 @@ function registerNetworkNodesAtNode(logisticsNode, req, res) {
     .json({ success: true, message: "New network nodes added at node" });
 }
 
-async function synchronizeNode(logisticsNode, req, res) {
+async function synchronizeNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const currentChainLength = logisticsNode.blockchain.chain.length;
   let maxLength = currentChainLength;
   let longestChain = null;
@@ -131,7 +148,7 @@ async function synchronizeNode(logisticsNode, req, res) {
       .status(200)
       .json({ success: true, message: "Node is synchronized and up to date" });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage: "An error occurred trying to synchronize the node.",

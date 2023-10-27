@@ -1,10 +1,15 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import Node from "../../models/classes/Node";
 //import NodeCall from "../../models/interfaces/Api";
 
 import axios from "axios";
+import { logisticsNode } from "../../server";
 
-async function mineAndBroadcastBlock(logisticsNode, req, res) {
+async function mineAndBroadcastBlock(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   // mine block at node that got the call
   console.log("MINE BLOCK IS RUNNING");
 
@@ -13,7 +18,7 @@ async function mineAndBroadcastBlock(logisticsNode, req, res) {
   try {
     // validate and register mined block at all of that nodes network nodes
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url) => {
+      logisticsNode.networkNodes.map(async (url: string) => {
         return axios.post(`${url}/api/node/block`, { block: block });
       })
     );
@@ -33,7 +38,11 @@ async function mineAndBroadcastBlock(logisticsNode, req, res) {
   }
 }
 
-function validateAndRegisterBlockAtNode(logisticsNode, req, res) {
+function validateAndRegisterBlockAtNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const block = req.body.block;
   const lastBlock = logisticsNode.blockchain.getLastBlock();
 

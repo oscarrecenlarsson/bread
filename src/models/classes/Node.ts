@@ -10,7 +10,7 @@ export default class Node {
   nodeName: string;
   networkNodes: string[];
 
-  constructor(nodeUrl, nodeName) {
+  constructor(nodeUrl: string, nodeName: string) {
     this.blockchain = new Blockchain();
     this.processAndSend = [];
     this.finalized = [];
@@ -19,7 +19,7 @@ export default class Node {
     this.networkNodes = [];
   }
 
-  createShipment(route, products) {
+  createShipment(route: string[], products: string[]) {
     //ShipmentInput
     const shipment = new Shipment({ route, products });
     this.addShipmentToPendingList(shipment);

@@ -1,7 +1,13 @@
 import axios from "axios";
-import Shipment from "../../models/Shipment";
+import Shipment from "../../models/classes/Shipment";
+import { Request, Response } from "express";
+import Node from "../../models/classes/Node";
 
-async function createAndBroadcastShipment(logisticsNode, req, res) {
+async function createAndBroadcastShipment(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const shipment = logisticsNode.createShipment(
     req.body.route,
     req.body.products
@@ -12,7 +18,7 @@ async function createAndBroadcastShipment(logisticsNode, req, res) {
   try {
     // register shipment at all network nodes (pendingList)
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url) => {
+      logisticsNode.networkNodes.map(async (url: string) => {
         axios.post(`${url}/api/node/shipment`, shipment);
       })
     );
@@ -26,7 +32,7 @@ async function createAndBroadcastShipment(logisticsNode, req, res) {
       message: "Shipment has been created and broadcasted to the network",
     });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage: "An error occurred creating and broadcasting the shipment.",
@@ -34,13 +40,21 @@ async function createAndBroadcastShipment(logisticsNode, req, res) {
   }
 }
 
-function registerShipmentAtNode(logisticsNode, req, res) {
+function registerShipmentAtNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const shipment = req.body;
   const index = logisticsNode.addShipmentToPendingList(shipment);
   res.status(201).json({ success: true, data: index });
 }
 
-async function SendShipmentToNextNode(logisticsNode, req, res) {
+async function SendShipmentToNextNode(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   // get the shipment object by id
   const id = req.params["id"];
 
@@ -68,7 +82,7 @@ async function SendShipmentToNextNode(logisticsNode, req, res) {
       message: "Shipment has been sent to next node",
     });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage: "An error occurred sending the shipment to the next node.",
@@ -76,12 +90,16 @@ async function SendShipmentToNextNode(logisticsNode, req, res) {
   }
 }
 
-async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
+async function recieveAndBroadcastUpdatedShipment(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const shipment = req.body.updatedShipment;
   try {
     // register updated shipment at all network nodes (pendingList)
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url) => {
+      logisticsNode.networkNodes.map(async (url: string) => {
         axios.post(`${url}/api/node/shipment`, shipment);
       })
     );
@@ -99,7 +117,7 @@ async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
         "shipment recieved at node and status broadcasted to the network",
     });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage:
@@ -108,10 +126,14 @@ async function recieveAndBroadcastUpdatedShipment(logisticsNode, req, res) {
   }
 }
 
-function getProcessAndSendShipmentById(logisticsNode, req, res) {
+function getProcessAndSendShipmentById(
+  logisticsNode: Node,
+  req: Request,
+  res: Response
+) {
   const id = req.params["id"];
   const shipment = logisticsNode.processAndSend.find(
-    (shipment) => shipment.shipmentId === id
+    (shipment: Shipment) => shipment.shipmentId === id
   );
   res.status(201).json({ success: true, data: shipment });
 }
