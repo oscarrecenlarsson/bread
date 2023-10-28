@@ -1,4 +1,4 @@
-import { Product } from "../interfaces/Shipment";
+import { Product, Waypoint } from "../interfaces/Shipment";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
 
@@ -19,8 +19,12 @@ export default class BlockchainNode {
     this.networkNodes = [];
   }
 
-  createShipment(route: string[], products: Product[]): Shipment {
-    const shipment = new Shipment(route, products);
+  createShipment(
+    logisticsNode: BlockchainNode,
+    route: Waypoint[],
+    products: Product[]
+  ): Shipment {
+    const shipment = new Shipment(logisticsNode, route, products);
     this.addShipmentToPendingList(shipment);
     this.addShipmentToProcessAndSend(shipment);
     return shipment;
@@ -36,8 +40,15 @@ export default class BlockchainNode {
   }
 
   removeShipmentFromProcessAndSend(shipment: Shipment) {
-    const index = this.processAndSend.indexOf(shipment);
-    this.processAndSend.splice(index, 1);
+    const ShipmentId = shipment.shipmentId;
+    const ShipmentToRemove = this.processAndSend.find(
+      (shipment) => shipment.shipmentId === ShipmentId
+    );
+    if (ShipmentToRemove) {
+      const index = this.processAndSend.indexOf(ShipmentToRemove);
+      console.log("INDEX", index);
+      this.processAndSend.splice(index, 1);
+    }
   }
 
   addShipmentToFinalized(shipment: Shipment) {

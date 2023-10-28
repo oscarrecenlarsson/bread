@@ -12,6 +12,11 @@ export interface Product {
   Ingredients?: this[];
 }
 
+export interface Waypoint {
+  nodeName: string;
+  nodeUrl: string;
+}
+
 // export interface ShipmentInput {
 //   route: string[];
 //   products: Product[];

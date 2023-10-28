@@ -9,6 +9,7 @@ async function createAndBroadcastShipment(
   res: Response
 ) {
   const shipment = logisticsNode.createShipment(
+    logisticsNode,
     req.body.route,
     req.body.products
   );
@@ -62,13 +63,18 @@ async function SendShipmentToNextNode(
     const response = await axios.get(
       `${logisticsNode.nodeUrl}/api/node/shipments/shipment/${id}`
     );
+
     const shipment = response.data.data; //NOT INSTANCE OF SHIPMENT
+
+    console.log("data", response.data);
+
+    console.log("shipment", shipment);
 
     logisticsNode.removeShipmentFromProcessAndSend(shipment);
 
     const updatedShipment = Shipment.update(shipment);
 
-    const nextNodeUrl = updatedShipment.currentLocation;
+    const nextNodeUrl = updatedShipment.currentLocation.nodeUrl;
 
     // the updated shipment is recieved at the next node
     // and then broadcasted to the network

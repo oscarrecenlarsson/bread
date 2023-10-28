@@ -1,32 +1,49 @@
 import { v4 as uuidv4 } from "uuid";
-import { Product } from "../interfaces/Shipment";
+import { Product, Waypoint } from "../interfaces/Shipment";
+import BlockchainNode from "./BlockchainNode";
 
 export default class Shipment {
   shipmentId: string;
   currentTime: string;
-  route: string[]; //enum of farmer, mill, bakery and store?
-  sender: string;
-  currentLocation: string;
-  destination: string; //enum of farmer, mill, bakery and store?
+  route: Waypoint[]; //enum of farmer, mill, bakery and store?
+  sender: Waypoint;
+  currentLocation: Waypoint;
+  destination: Waypoint; //enum of farmer, mill, bakery and store?
   delivered: boolean;
   products: Product[]; //product array
   //{productName:wheat, batchId:123}
   //{productName: flour, batchId:789, ingredients: [{productName: wheat, batchId: 123}]}
 
-  constructor(route: string[], products: Product[]) {
+  constructor(
+    logisticsNode: BlockchainNode,
+    route: Waypoint[],
+    products: Product[]
+  ) {
+    const sender = {
+      nodeName: logisticsNode.nodeName,
+      nodeUrl: logisticsNode.nodeUrl,
+    };
     this.shipmentId = uuidv4().split("-").join("");
     this.currentTime = new Date().toString();
-    this.route = route;
-    this.sender = route[0];
-    this.currentLocation = route[0];
+    this.route = [sender, ...route];
+    this.sender = sender;
+    this.currentLocation = sender;
     this.destination = route[route.length - 1];
     this.delivered = false;
     this.products = products;
   }
 
   static update(shipment: Shipment) {
-    const nextLocationIndex =
-      shipment.route.indexOf(shipment.currentLocation) + 1;
+    console.log("Route", shipment.route);
+    console.log("currentLocation", shipment.currentLocation);
+
+    const currentLocationIndex = shipment.route.findIndex(
+      (node) =>
+        node.nodeName === shipment.currentLocation.nodeName &&
+        node.nodeUrl === shipment.currentLocation.nodeUrl
+    );
+
+    const nextLocationIndex = currentLocationIndex + 1;
 
     if (shipment.route[nextLocationIndex] === shipment.destination) {
       shipment.delivered = true;
