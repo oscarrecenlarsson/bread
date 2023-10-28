@@ -18,8 +18,10 @@ async function mineAndBroadcastBlock(
   try {
     // validate and register mined block at all of that nodes network nodes
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url: string) => {
-        return axios.post(`${url}/api/node/block`, { block: block });
+      logisticsNode.networkNodes.map(async (networkNode) => {
+        return axios.post(`${networkNode.nodeUrl}/api/node/block`, {
+          block: block,
+        });
       })
     );
 

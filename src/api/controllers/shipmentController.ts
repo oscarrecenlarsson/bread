@@ -19,8 +19,8 @@ async function createAndBroadcastShipment(
   try {
     // register shipment at all network nodes (pendingList)
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url: string) => {
-        axios.post(`${url}/api/node/shipment`, shipment);
+      logisticsNode.networkNodes.map(async (networkNode) => {
+        axios.post(`${networkNode.nodeUrl}/api/node/shipment`, shipment);
       })
     );
 
@@ -105,8 +105,8 @@ async function recieveAndBroadcastUpdatedShipment(
   try {
     // register updated shipment at all network nodes (pendingList)
     await Promise.all(
-      logisticsNode.networkNodes.map(async (url: string) => {
-        axios.post(`${url}/api/node/shipment`, shipment);
+      logisticsNode.networkNodes.map(async (networkNode) => {
+        axios.post(`${networkNode.nodeUrl}/api/node/shipment`, shipment);
       })
     );
 

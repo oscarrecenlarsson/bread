@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import axios from "axios";
 import BlockchainNode from "../../models/classes/BlockchainNode";
+import { NetworkNode } from "../../models/interfaces/Node";
+import { compareNetworkNodes } from "../../utils/compareNodes";
 //import NodeCall from "../../models/interfaces/Api";
 
 function getFullNode(
@@ -16,28 +18,45 @@ async function createAndBroadcastNode(
   req: Request,
   res: Response
 ) {
-  const nodeUrlToAdd = req.body.nodeUrl;
-  //check if nodeUrlToAdd is already in this node's network list or is this nodes url
+  const networkNodeToAdd = req.body as NetworkNode;
+
+  //check if networkNode is already in this node's network list or is this node
+
+  console.log("createAndBroadcastNode");
+
+  let exists = false;
+  for (const networkNode of logisticsNode.networkNodes) {
+    exists = compareNetworkNodes(networkNode, networkNodeToAdd);
+  }
+
   if (
-    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
-    logisticsNode.nodeUrl !== nodeUrlToAdd
+    !exists &&
+    networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
+    networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
   ) {
     // add all network nodes, including this node's url, to the new node
+    const nodeName = logisticsNode.nodeName;
+    const nodeUrl = logisticsNode.nodeUrl;
+    const thisNode = { nodeName, nodeUrl };
     const body = {
-      nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
+      nodes: [...logisticsNode.networkNodes, thisNode],
     };
 
+    console.log("BOOOODY", body);
+
     try {
-      await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
+      await axios.post(`${networkNodeToAdd.nodeUrl}/api/node/nodes`, body);
 
       // sync chain and pendingList to the new node
-      const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+      const consensusPromise = axios.get(
+        `${networkNodeToAdd.nodeUrl}/api/node/consensus`
+      );
 
       // add new node to networkNodes list for all other nodes in the network
       const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
-        async (url) => {
-          const body = { nodeUrl: nodeUrlToAdd };
-          return axios.post(`${url}/api/node/node`, body);
+        async (networkNode) => {
+          const body = networkNodeToAdd;
+          return axios.post(`${networkNode.nodeUrl}/api/node/node`, body);
         }
       );
 
@@ -45,7 +64,7 @@ async function createAndBroadcastNode(
       await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
 
       // add new node to networkNodes list at this node
-      logisticsNode.networkNodes.push(nodeUrlToAdd);
+      logisticsNode.networkNodes.push(networkNodeToAdd);
 
       res
         .status(201)
@@ -73,13 +92,23 @@ function registerNetworkNodeAtNode(
   // add node to networkNodes list as long as it is not already there
   // or the url matches the current nodes url
 
-  const nodeUrlToAdd = req.body.nodeUrl;
+  const networkNodeToAdd = req.body;
+
+  console.log("LOOK HERE", networkNodeToAdd);
+
+  console.log("registerNetworkNodeAtNode");
+
+  let exists = false;
+  for (const networkNode of logisticsNode.networkNodes) {
+    exists = compareNetworkNodes(networkNode, networkNodeToAdd);
+  }
 
   if (
-    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
-    logisticsNode.nodeUrl !== nodeUrlToAdd
+    !exists &&
+    networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
+    networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
   ) {
-    logisticsNode.networkNodes.push(nodeUrlToAdd);
+    logisticsNode.networkNodes.push(networkNodeToAdd);
   }
 
   res
@@ -97,15 +126,22 @@ function registerNetworkNodesAtNode(
 
   const allNodes = req.body.nodes;
 
-  allNodes.forEach((url: string) => {
+  console.log("registerNetworkNodesAtNode");
+
+  allNodes.forEach((networkNodeToAdd: NetworkNode) => {
+    let exists = false;
+    for (const networkNode of logisticsNode.networkNodes) {
+      exists = compareNetworkNodes(networkNode, networkNodeToAdd);
+    }
+
     if (
-      logisticsNode.networkNodes.indexOf(url) === -1 &&
-      logisticsNode.nodeUrl !== url
+      !exists &&
+      networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
+      networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
     ) {
-      logisticsNode.networkNodes.push(url);
+      logisticsNode.networkNodes.push(networkNodeToAdd);
     }
   });
-
   res
     .status(201)
     .json({ success: true, message: "New network nodes added at node" });
@@ -122,9 +158,9 @@ async function synchronizeNode(
   let pendingList = null;
 
   try {
-    for (const networkNodeUrl of logisticsNode.networkNodes) {
+    for (const networkNode of logisticsNode.networkNodes) {
       // get the network node and set relevant variables based on that node
-      const response = await axios.get(`${networkNodeUrl}/api/node`);
+      const response = await axios.get(`${networkNode.nodeUrl}/api/node`);
       const NetworkChain = response.data.blockchain.chain;
       const NetworkPendingList = response.data.blockchain.pendingList;
 

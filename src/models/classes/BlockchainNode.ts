@@ -1,3 +1,4 @@
+import { NetworkNode } from "../interfaces/Node";
 import { Product, Waypoint } from "../interfaces/Shipment";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
@@ -8,7 +9,7 @@ export default class BlockchainNode {
   finalized: Shipment[];
   nodeUrl: string;
   nodeName: string;
-  networkNodes: string[];
+  networkNodes: NetworkNode[];
 
   constructor(nodeUrl: string, nodeName: string) {
     this.blockchain = new Blockchain();
@@ -46,7 +47,6 @@ export default class BlockchainNode {
     );
     if (ShipmentToRemove) {
       const index = this.processAndSend.indexOf(ShipmentToRemove);
-      console.log("INDEX", index);
       this.processAndSend.splice(index, 1);
     }
   }
