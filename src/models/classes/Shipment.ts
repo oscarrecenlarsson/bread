@@ -45,9 +45,22 @@ export default class Shipment {
 
     const nextLocationIndex = currentLocationIndex + 1;
 
-    if (shipment.route[nextLocationIndex] === shipment.destination) {
+    function compareWaypoints(waypoint1: Waypoint, waypoint2: Waypoint) {
+      return (
+        waypoint1.nodeName === waypoint2.nodeName &&
+        waypoint1.nodeUrl === waypoint2.nodeUrl
+      );
+    }
+
+    if (
+      compareWaypoints(shipment.route[nextLocationIndex], shipment.destination)
+    ) {
       shipment.delivered = true;
     }
+
+    // if (shipment.route[nextLocationIndex] === shipment.destination) {
+    //   shipment.delivered = true;
+    // }
     shipment.currentTime = new Date().toString();
     shipment.currentLocation = shipment.route[nextLocationIndex];
 
