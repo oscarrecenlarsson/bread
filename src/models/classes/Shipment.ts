@@ -58,9 +58,6 @@ export default class Shipment {
       shipment.delivered = true;
     }
 
-    // if (shipment.route[nextLocationIndex] === shipment.destination) {
-    //   shipment.delivered = true;
-    // }
     shipment.currentTime = new Date().toString();
     shipment.currentLocation = shipment.route[nextLocationIndex];
 
