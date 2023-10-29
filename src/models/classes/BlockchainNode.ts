@@ -1,5 +1,5 @@
 import { NetworkNode } from "../interfaces/Node";
-import { Product, Waypoint } from "../interfaces/Shipment";
+import { Product } from "../interfaces/Shipment";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
 
@@ -22,7 +22,7 @@ export default class BlockchainNode {
 
   createShipment(
     logisticsNode: BlockchainNode,
-    route: Waypoint[],
+    route: NetworkNode[],
     products: Product[]
   ): Shipment {
     const shipment = new Shipment(logisticsNode, route, products);
@@ -40,13 +40,12 @@ export default class BlockchainNode {
     this.processAndSend.push(shipment);
   }
 
-  removeShipmentFromProcessAndSend(shipment: Shipment) {
-    const ShipmentId = shipment.shipmentId;
-    const ShipmentToRemove = this.processAndSend.find(
-      (shipment) => shipment.shipmentId === ShipmentId
+  removeShipmentFromProcessAndSend(shipmentToRemove: Shipment) {
+    const index = this.processAndSend.findIndex(
+      (shipment) => shipment.shipmentId === shipmentToRemove.shipmentId
     );
-    if (ShipmentToRemove) {
-      const index = this.processAndSend.indexOf(ShipmentToRemove);
+
+    if (index !== -1) {
       this.processAndSend.splice(index, 1);
     }
   }

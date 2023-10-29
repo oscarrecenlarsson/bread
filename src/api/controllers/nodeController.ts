@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import axios from "axios";
 import BlockchainNode from "../../models/classes/BlockchainNode";
 import { NetworkNode } from "../../models/interfaces/Node";
-import { compareNetworkNodes } from "../../utils/compareNodes";
+import {
+  compareNetworkNodes,
+  isThisNodeOrExistsInNetworkNodes,
+} from "../../utils/compareNodes";
 //import NodeCall from "../../models/interfaces/Api";
 
 function getFullNode(
@@ -18,22 +21,11 @@ async function createAndBroadcastNode(
   req: Request,
   res: Response
 ) {
-  const networkNodeToAdd = req.body as NetworkNode;
-
-  //check if networkNode is already in this node's network list or is this node
-
   console.log("createAndBroadcastNode");
 
-  let exists = false;
-  for (const networkNode of logisticsNode.networkNodes) {
-    exists = compareNetworkNodes(networkNode, networkNodeToAdd);
-  }
+  const networkNodeToAdd = req.body as NetworkNode;
 
-  if (
-    !exists &&
-    networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
-    networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
-  ) {
+  if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
     // add all network nodes, including this node's url, to the new node
     const nodeName = logisticsNode.nodeName;
     const nodeUrl = logisticsNode.nodeUrl;
@@ -89,25 +81,11 @@ function registerNetworkNodeAtNode(
   req: Request,
   res: Response
 ) {
-  // add node to networkNodes list as long as it is not already there
-  // or the url matches the current nodes url
+  console.log("registerNetworkNodeAtNode");
 
   const networkNodeToAdd = req.body;
 
-  console.log("LOOK HERE", networkNodeToAdd);
-
-  console.log("registerNetworkNodeAtNode");
-
-  let exists = false;
-  for (const networkNode of logisticsNode.networkNodes) {
-    exists = compareNetworkNodes(networkNode, networkNodeToAdd);
-  }
-
-  if (
-    !exists &&
-    networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
-    networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
-  ) {
+  if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
     logisticsNode.networkNodes.push(networkNodeToAdd);
   }
 
@@ -121,24 +99,12 @@ function registerNetworkNodesAtNode(
   req: Request,
   res: Response
 ) {
-  // add nodes to networkNodes list as long as they are not already there
-  // or any of the URLs matches the current nodes URL
+  console.log("registerNetworkNodesAtNode");
 
   const allNodes = req.body.nodes;
 
-  console.log("registerNetworkNodesAtNode");
-
   allNodes.forEach((networkNodeToAdd: NetworkNode) => {
-    let exists = false;
-    for (const networkNode of logisticsNode.networkNodes) {
-      exists = compareNetworkNodes(networkNode, networkNodeToAdd);
-    }
-
-    if (
-      !exists &&
-      networkNodeToAdd.nodeName !== logisticsNode.nodeName &&
-      networkNodeToAdd.nodeUrl !== logisticsNode.nodeUrl
-    ) {
+    if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
       logisticsNode.networkNodes.push(networkNodeToAdd);
     }
   });

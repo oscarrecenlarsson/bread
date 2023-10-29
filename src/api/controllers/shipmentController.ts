@@ -66,10 +66,6 @@ async function SendShipmentToNextNode(
 
     const shipment = response.data.data; //NOT INSTANCE OF SHIPMENT
 
-    console.log("data", response.data);
-
-    console.log("shipment", shipment);
-
     logisticsNode.removeShipmentFromProcessAndSend(shipment);
 
     const updatedShipment = Shipment.update(shipment);

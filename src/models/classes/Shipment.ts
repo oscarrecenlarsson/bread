@@ -1,14 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
-import { Product, Waypoint } from "../interfaces/Shipment";
+import { Product } from "../interfaces/Shipment";
 import BlockchainNode from "./BlockchainNode";
+import { NetworkNode } from "../interfaces/Node";
+import { compareNetworkNodes } from "../../utils/compareNodes";
 
 export default class Shipment {
   shipmentId: string;
   currentTime: string;
-  route: Waypoint[]; //enum of farmer, mill, bakery and store?
-  sender: Waypoint;
-  currentLocation: Waypoint;
-  destination: Waypoint; //enum of farmer, mill, bakery and store?
+  route: NetworkNode[]; //enum of farmer, mill, bakery and store?
+  sender: NetworkNode;
+  currentLocation: NetworkNode;
+  destination: NetworkNode; //enum of farmer, mill, bakery and store?
   delivered: boolean;
   products: Product[]; //product array
   //{productName:wheat, batchId:123}
@@ -16,7 +18,7 @@ export default class Shipment {
 
   constructor(
     logisticsNode: BlockchainNode,
-    route: Waypoint[],
+    route: NetworkNode[],
     products: Product[]
   ) {
     const sender = {
@@ -45,15 +47,11 @@ export default class Shipment {
 
     const nextLocationIndex = currentLocationIndex + 1;
 
-    function compareWaypoints(waypoint1: Waypoint, waypoint2: Waypoint) {
-      return (
-        waypoint1.nodeName === waypoint2.nodeName &&
-        waypoint1.nodeUrl === waypoint2.nodeUrl
-      );
-    }
-
     if (
-      compareWaypoints(shipment.route[nextLocationIndex], shipment.destination)
+      compareNetworkNodes(
+        shipment.route[nextLocationIndex],
+        shipment.destination
+      )
     ) {
       shipment.delivered = true;
     }
