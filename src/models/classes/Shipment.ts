@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Product } from "../interfaces/Shipment";
+import { Product } from "../interfaces/Product";
 import BlockchainNode from "./BlockchainNode";
 import { NetworkNode } from "../interfaces/Node";
 import { compareNetworkNodes } from "../../utils/compareNodes";

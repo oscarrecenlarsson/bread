@@ -1,0 +1,308 @@
+{
+	"info": {
+		"_postman_id": "72c659fe-5d8f-4db3-8d62-16c0303da955",
+		"name": "node assignment 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "27386960"
+	},
+	"item": [
+		{
+			"name": "Add nodes",
+			"item": [
+				{
+					"name": "add node 2 - mill",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"nodeName\":\"Mill\",\"nodeUrl\": \"http://localhost:3001\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/network/node"
+					},
+					"response": []
+				},
+				{
+					"name": "add node 3 - bakery",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"nodeName\":\"Bakery\",\"nodeUrl\": \"http://localhost:3002\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/network/node"
+					},
+					"response": []
+				},
+				{
+					"name": "add node 4 - store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"nodeName\":\"Store\",\"nodeUrl\": \"http://localhost:3003\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/network/node"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Add & send shipments",
+			"item": [
+				{
+					"name": "add shipment to node 1 - farmer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									"\r",
+									"//console.log(jsonData.data.currentLocation.nodeUrl)\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"route\": [\r\n        {\r\n            \"nodeName\": \"Mill\",\r\n            \"nodeUrl\": \"http://localhost:3001\"\r\n        }\r\n    ],\r\n    \"products\": [\r\n        {\r\n            \"category\": \"wheat\",\r\n            \"batchId\": 123,\r\n            \"type\": \"hardRedWinter\",\r\n            \"qualityGrade\": \"superior\",\r\n            \"certificates\": [\r\n                \"ecoCertificate\"\r\n            ],\r\n            \"ecoCertified\": true,\r\n            \"unit\": \"kg\",\r\n            \"amount\": 100\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/network/shipment"
+					},
+					"response": []
+				},
+				{
+					"name": "ship to next node",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									"//console.log(\"vars have been updated\");\r",
+									"//console.log(\"url\", jsonData.data.currentLocation);\r",
+									"//console.log(\"shipmentId\", jsonData.data.shipmentId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api/node/shipments/shipment/{{shipmentId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "add shipment to node 2 - mill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"route\": [\r\n        {\r\n            \"nodeName\": \"Bakery\",\r\n            \"nodeUrl\": \"http://localhost:3002\"\r\n        }\r\n    ],\r\n    \"products\": [\r\n        {\r\n            \"category\": \"flour\",\r\n            \"batchId\": 234,\r\n            \"type\": \"T55\",\r\n            \"qualityGrade\": \"breadFlour\",\r\n            \"certificates\": [\r\n                \"ecoCertificate\"\r\n            ],\r\n            \"ecoCertified\": true,\r\n            \"productionMethod\": \"stoneMilled\",\r\n            \"unit\": \"kg\",\r\n            \"amount\": 90,\r\n            \"ingredients\": [\r\n                {\r\n                    \"category\": \"wheat\",\r\n                    \"batchId\": 123,\r\n                    \"type\": \"hardRedWinter\",\r\n                    \"qualityGrade\": \"superior\",\r\n                    \"certificates\": [\r\n                        \"ecoCertificate\"\r\n                    ],\r\n                    \"ecoCertified\": true\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3001/api/network/shipment"
+					},
+					"response": []
+				},
+				{
+					"name": "ship to next node",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									"//console.log(\"vars have been updated\");\r",
+									"//console.log(\"url\", jsonData.data.currentLocation);\r",
+									"//console.log(\"shipmentId\", jsonData.data.shipmentId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api/node/shipments/shipment/{{shipmentId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "add shipment to node 3 - bakery",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"route\": [\r\n        {\r\n            \"nodeName\": \"Store\",\r\n            \"nodeUrl\": \"http://localhost:3003\"\r\n        }\r\n    ],\r\n    \"products\": [\r\n        {\r\n            \"category\": \"bread\",\r\n            \"batchId\": 345,\r\n            \"type\": \"baguette\",\r\n            \"certificates\": [\r\n                \"ecoCertificate\"\r\n            ],\r\n            \"ecoCertified\": true,\r\n            \"unit\": \"piece\",\r\n            \"amount\": 200,\r\n            \"ingredients\": [\r\n                {\r\n                    \"category\": \"flour\",\r\n                    \"batchId\": 234,\r\n                    \"type\": \"T55\",\r\n                    \"qualityGrade\": \"breadFlour\",\r\n                    \"certificates\": [\r\n                        \"ecoCertificate\"\r\n                    ],\r\n                    \"ecoCertified\": true,\r\n                    \"productionMethod\": \"stoneMilled\",\r\n                    \"ingredients\": [\r\n                        {\r\n                            \"category\": \"wheat\",\r\n                            \"batchId\": 123,\r\n                            \"type\": \"hardRedWinter\",\r\n                            \"qualityGrade\": \"superior\",\r\n                            \"certificates\": [\r\n                                \"ecoCertificate\"\r\n                            ],\r\n                            \"ecoCertified\": true\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3002/api/network/shipment"
+					},
+					"response": []
+				},
+				{
+					"name": "ship to next node",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"baseUrl\", jsonData.data.currentLocation.nodeUrl);\r",
+									"pm.collectionVariables.set(\"shipmentId\", jsonData.data.shipmentId);\r",
+									"//console.log(\"vars have been updated\");\r",
+									"//console.log(\"url\", jsonData.data.currentLocation);\r",
+									"//console.log(\"shipmentId\", jsonData.data.shipmentId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api/node/shipments/shipment/{{shipmentId}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mine block",
+			"item": [
+				{
+					"name": "mine block",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:3000/api/network/block"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get info about bread from blockchain",
+			"item": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "shipmentId",
+			"value": ""
+		}
+	]
+}

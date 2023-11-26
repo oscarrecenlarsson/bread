@@ -1,5 +1,5 @@
 import { NetworkNode } from "../interfaces/Node";
-import { Product } from "../interfaces/Shipment";
+import { Product } from "../interfaces/Product";
 import Blockchain from "./Blockchain";
 import Shipment from "./Shipment";
 
