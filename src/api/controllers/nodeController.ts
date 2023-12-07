@@ -1,32 +1,54 @@
-const axios = require("axios");
+import { Request, Response } from "express";
+import axios from "axios";
+import BlockchainNode from "../../models/classes/BlockchainNode";
+import { NetworkNode } from "../../models/interfaces/Node";
+import {
+  compareNetworkNodes,
+  isThisNodeOrExistsInNetworkNodes,
+} from "../../utils/compareNodes";
+//import NodeCall from "../../models/interfaces/Api";
 
-function getFullNode(logisticsNode, req, res) {
+function getFullNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
   res.status(200).json(logisticsNode);
 }
 
-async function createAndBroadcastNode(logisticsNode, req, res) {
-  const nodeUrlToAdd = req.body.nodeUrl;
-  //check if nodeUrlToAdd is already in this node's network list or is this nodes url
-  if (
-    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
-    logisticsNode.nodeUrl !== nodeUrlToAdd
-  ) {
+async function createAndBroadcastNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
+  console.log("createAndBroadcastNode");
+
+  const networkNodeToAdd = req.body as NetworkNode;
+
+  if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
     // add all network nodes, including this node's url, to the new node
+    const nodeName = logisticsNode.nodeName;
+    const nodeUrl = logisticsNode.nodeUrl;
+    const thisNode = { nodeName, nodeUrl };
     const body = {
-      nodes: [...logisticsNode.networkNodes, logisticsNode.nodeUrl],
+      nodes: [...logisticsNode.networkNodes, thisNode],
     };
 
+    console.log("BOOOODY", body);
+
     try {
-      await axios.post(`${nodeUrlToAdd}/api/node/nodes`, body);
+      await axios.post(`${networkNodeToAdd.nodeUrl}/api/node/nodes`, body);
 
       // sync chain and pendingList to the new node
-      const consensusPromise = axios.get(`${nodeUrlToAdd}/api/node/consensus`);
+      const consensusPromise = axios.get(
+        `${networkNodeToAdd.nodeUrl}/api/node/consensus`
+      );
 
       // add new node to networkNodes list for all other nodes in the network
       const addNewNodeToOtherNodesPromises = logisticsNode.networkNodes.map(
-        async (url) => {
-          const body = { nodeUrl: nodeUrlToAdd };
-          return axios.post(`${url}/api/node/node`, body);
+        async (networkNode) => {
+          const body = networkNodeToAdd;
+          return axios.post(`${networkNode.nodeUrl}/api/node/node`, body);
         }
       );
 
@@ -34,13 +56,13 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
       await Promise.all([consensusPromise, addNewNodeToOtherNodesPromises]);
 
       // add new node to networkNodes list at this node
-      logisticsNode.networkNodes.push(nodeUrlToAdd);
+      logisticsNode.networkNodes.push(networkNodeToAdd);
 
       res
         .status(201)
         .json({ success: true, message: "New node added to the network" });
     } catch (error) {
-      console.error(error.stack);
+      console.error(error); //can't log error.stack
       res.status(500).json({
         success: false,
         errorMessage: "An error occurred creating and broadcasting the node.",
@@ -54,17 +76,17 @@ async function createAndBroadcastNode(logisticsNode, req, res) {
   }
 }
 
-function registerNetworkNodeAtNode(logisticsNode, req, res) {
-  // add node to networkNodes list as long as it is not already there
-  // or the url matches the current nodes url
+function registerNetworkNodeAtNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
+  console.log("registerNetworkNodeAtNode");
 
-  const nodeUrlToAdd = req.body.nodeUrl;
+  const networkNodeToAdd = req.body;
 
-  if (
-    logisticsNode.networkNodes.indexOf(nodeUrlToAdd) === -1 &&
-    logisticsNode.nodeUrl !== nodeUrlToAdd
-  ) {
-    logisticsNode.networkNodes.push(nodeUrlToAdd);
+  if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
+    logisticsNode.networkNodes.push(networkNodeToAdd);
   }
 
   res
@@ -72,36 +94,39 @@ function registerNetworkNodeAtNode(logisticsNode, req, res) {
     .json({ success: true, message: "New network node added at node" });
 }
 
-function registerNetworkNodesAtNode(logisticsNode, req, res) {
-  // add nodes to networkNodes list as long as they are not already there
-  // or any of the URLs matches the current nodes URL
+function registerNetworkNodesAtNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
+  console.log("registerNetworkNodesAtNode");
 
   const allNodes = req.body.nodes;
 
-  allNodes.forEach((url) => {
-    if (
-      logisticsNode.networkNodes.indexOf(url) === -1 &&
-      logisticsNode.nodeUrl !== url
-    ) {
-      logisticsNode.networkNodes.push(url);
+  allNodes.forEach((networkNodeToAdd: NetworkNode) => {
+    if (!isThisNodeOrExistsInNetworkNodes(logisticsNode, networkNodeToAdd)) {
+      logisticsNode.networkNodes.push(networkNodeToAdd);
     }
   });
-
   res
     .status(201)
     .json({ success: true, message: "New network nodes added at node" });
 }
 
-async function synchronizeNode(logisticsNode, req, res) {
+async function synchronizeNode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
   const currentChainLength = logisticsNode.blockchain.chain.length;
   let maxLength = currentChainLength;
   let longestChain = null;
   let pendingList = null;
 
   try {
-    for (const networkNodeUrl of logisticsNode.networkNodes) {
+    for (const networkNode of logisticsNode.networkNodes) {
       // get the network node and set relevant variables based on that node
-      const response = await axios.get(`${networkNodeUrl}/api/node`);
+      const response = await axios.get(`${networkNode.nodeUrl}/api/node`);
       const NetworkChain = response.data.blockchain.chain;
       const NetworkPendingList = response.data.blockchain.pendingList;
 
@@ -130,7 +155,7 @@ async function synchronizeNode(logisticsNode, req, res) {
       .status(200)
       .json({ success: true, message: "Node is synchronized and up to date" });
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({
       success: false,
       errorMessage: "An error occurred trying to synchronize the node.",
@@ -138,7 +163,7 @@ async function synchronizeNode(logisticsNode, req, res) {
   }
 }
 
-module.exports = {
+export {
   getFullNode,
   createAndBroadcastNode,
   registerNetworkNodeAtNode,

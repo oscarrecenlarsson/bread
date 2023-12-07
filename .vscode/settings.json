@@ -1,0 +1,18 @@
+{
+  "editor.tokenColorCustomizations": {
+    "[One Dark Pro]": {
+      //"comments": "#4bd846",
+      "variables": "#c4c4c4",
+      //"keywords": "#ff00ee"
+      "textMateRules": [
+        {
+          "scope": ["support.type.property-name.json"],
+          "settings": {
+            "foreground": "#c4c4c4" // Change this to the color you desire
+          }
+        }
+      ]
+    }
+  },
+  "editor.semanticTokenColorCustomizations": {}
+}

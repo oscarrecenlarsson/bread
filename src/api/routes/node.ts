@@ -1,22 +1,22 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const {
+import {
   registerNetworkNodeAtNode,
   registerNetworkNodesAtNode,
   getFullNode,
   synchronizeNode,
-} = require("../controllers/nodeController");
-const {
+} from "../controllers/nodeController";
+import {
   registerShipmentAtNode,
   SendShipmentToNextNode,
   getProcessAndSendShipmentById,
-} = require("../controllers/shipmentController");
-const {
-  validateAndRegisterBlockAtNode,
-} = require("../controllers/blockController");
+  getProductByQrCode,
+} from "../controllers/shipmentController";
+import { validateAndRegisterBlockAtNode } from "../controllers/blockController";
+import BlockchainNode from "../../models/classes/BlockchainNode";
 
-module.exports = function (logisticsNode) {
+export default function (logisticsNode: BlockchainNode) {
   router.get("/", (req, res) => {
     getFullNode(logisticsNode, req, res);
   });
@@ -49,5 +49,10 @@ module.exports = function (logisticsNode) {
   router.get("/consensus", async (req, res) => {
     await synchronizeNode(logisticsNode, req, res);
   });
+
+  router.route("/finalized/product/:qrCode").get((req, res) => {
+    getProductByQrCode(logisticsNode, req, res);
+  });
+
   return router;
-};
+}

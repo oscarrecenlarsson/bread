@@ -2,13 +2,14 @@
   "name": "blockchain",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "node-1": "nodemon server.js 3000 http://localhost:3000",
-    "node-2": "nodemon server.js 3001 http://localhost:3001",
-    "node-3": "nodemon server.js 3002 http://localhost:3002",
-    "all-nodes": "concurrently \"npm run node-1\" \"npm run node-2\" \"npm run node-3\""
+    "start:ts": "tsc --watch",
+    "node-1": "nodemon --delay 2000 ./build/server.js 3000 http://localhost:3000 Farmer",
+    "node-2": "nodemon --delay 2000 ./build/server.js 3001 http://localhost:3001 Mill",
+    "node-3": "nodemon --delay 2000 ./build/server.js 3002 http://localhost:3002 Bakery",
+    "node-4": "nodemon --delay 2000 ./build/server.js 3003 http://localhost:3003 Store",
+    "all-nodes": "concurrently \"npm run start:ts\" \"npm run node-1\" \"npm run node-2\" \"npm run node-3\" \"npm run node-4\""
   },
   "keywords": [],
   "author": "",
@@ -17,10 +18,16 @@
     "axios": "^1.4.0",
     "express": "^4.18.2",
     "sha256": "^0.2.0",
+    "source-map-support": "^0.5.21",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.20",
+    "@types/node": "^20.8.7",
+    "@types/sha256": "^0.2.1",
+    "@types/uuid": "^9.0.6",
     "concurrently": "^8.2.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "typescript": "^5.2.2"
   }
 }

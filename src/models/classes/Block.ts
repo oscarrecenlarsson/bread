@@ -1,5 +1,14 @@
-class Block {
-  constructor({ nonce, data, prevHash, hash, index }) {
+import BlockInput from "../interfaces/Block";
+
+export default class Block {
+  index: number;
+  timestamp: number;
+  data: any;
+  nonce: number;
+  hash: string;
+  prevHash: string;
+
+  constructor({ nonce, data, prevHash, hash, index }: BlockInput) {
     this.index = index;
     this.timestamp = Date.now();
     this.data = data;
@@ -17,5 +26,3 @@ class Block {
     return new this({ nonce, data, prevHash, hash, index });
   }
 }
-
-module.exports = Block;
