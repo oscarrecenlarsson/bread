@@ -7,14 +7,12 @@ import { compareNetworkNodes } from "../../utils/compareNodes";
 export default class Shipment {
   shipmentId: string;
   currentTime: string;
-  route: NetworkNode[]; //enum of farmer, mill, bakery and store?
+  route: NetworkNode[];
   sender: NetworkNode;
   currentLocation: NetworkNode;
-  destination: NetworkNode; //enum of farmer, mill, bakery and store?
+  destination: NetworkNode;
   delivered: boolean;
-  products: Product[]; //product array
-  //{productName:wheat, batchId:123}
-  //{productName: flour, batchId:789, ingredients: [{productName: wheat, batchId: 123}]}
+  products: Product[];
 
   constructor(
     logisticsNode: BlockchainNode,

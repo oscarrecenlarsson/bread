@@ -11,6 +11,7 @@ import {
   registerShipmentAtNode,
   SendShipmentToNextNode,
   getProcessAndSendShipmentById,
+  getProductByQrCode,
 } from "../controllers/shipmentController";
 import { validateAndRegisterBlockAtNode } from "../controllers/blockController";
 import BlockchainNode from "../../models/classes/BlockchainNode";
@@ -48,5 +49,10 @@ export default function (logisticsNode: BlockchainNode) {
   router.get("/consensus", async (req, res) => {
     await synchronizeNode(logisticsNode, req, res);
   });
+
+  router.route("/finalized/product/:qrCode").get((req, res) => {
+    getProductByQrCode(logisticsNode, req, res);
+  });
+
   return router;
 }

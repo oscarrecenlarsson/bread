@@ -2,6 +2,7 @@ import axios from "axios";
 import Shipment from "../../models/classes/Shipment";
 import { Request, Response } from "express";
 import BlockchainNode from "../../models/classes/BlockchainNode";
+import { Product } from "../../models/interfaces/Product";
 
 async function createAndBroadcastShipment(
   logisticsNode: BlockchainNode,
@@ -137,7 +138,35 @@ function getProcessAndSendShipmentById(
   const shipment = logisticsNode.processAndSend.find(
     (shipment: Shipment) => shipment.shipmentId === id
   );
-  res.status(201).json({ success: true, data: shipment });
+  res.status(200).json({ success: true, data: shipment });
+}
+
+function getProductByQrCode(
+  logisticsNode: BlockchainNode,
+  req: Request,
+  res: Response
+) {
+  const qrCode = req.params["qrCode"];
+  console.log("QRCODE", qrCode);
+
+  let result = undefined;
+
+  for (const shipment of logisticsNode.finalized) {
+    result = shipment.products.find((product) => product.qrCode === qrCode);
+    if (result !== undefined) {
+      break;
+    }
+  }
+
+  if (result === undefined) {
+    res.status(404).json({
+      success: false,
+      message: `No product not found with the provided QR code: ${qrCode}`,
+    });
+    return;
+  }
+
+  res.status(200).json({ success: true, data: result });
 }
 
 export {
@@ -146,4 +175,5 @@ export {
   SendShipmentToNextNode,
   recieveAndBroadcastUpdatedShipment,
   getProcessAndSendShipmentById,
+  getProductByQrCode,
 };

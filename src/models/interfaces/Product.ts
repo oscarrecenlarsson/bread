@@ -16,4 +16,5 @@ export interface Product {
   unit?: string;
   amount?: number;
   ingredients?: this[];
+  qrCode?: string;
 }
