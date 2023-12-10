@@ -2,7 +2,6 @@ import axios from "axios";
 import Shipment from "../../models/classes/Shipment";
 import { Request, Response } from "express";
 import BlockchainNode from "../../models/classes/BlockchainNode";
-import { Product } from "../../models/interfaces/Product";
 
 async function createAndBroadcastShipment(
   logisticsNode: BlockchainNode,

@@ -1,6 +1,4 @@
 import express from "express";
-const router = express.Router();
-
 import {
   registerNetworkNodeAtNode,
   registerNetworkNodesAtNode,
@@ -15,6 +13,8 @@ import {
 } from "../controllers/shipmentController";
 import { validateAndRegisterBlockAtNode } from "../controllers/blockController";
 import BlockchainNode from "../../models/classes/BlockchainNode";
+
+const router = express.Router();
 
 export default function (logisticsNode: BlockchainNode) {
   router.get("/", (req, res) => {

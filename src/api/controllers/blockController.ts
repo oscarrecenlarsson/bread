@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-//import NodeCall from "../../models/interfaces/Api";
-
 import axios from "axios";
-import { logisticsNode } from "../../server";
 import BlockchainNode from "../../models/classes/BlockchainNode";
 
 async function mineAndBroadcastBlock(

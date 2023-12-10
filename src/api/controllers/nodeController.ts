@@ -2,11 +2,7 @@ import { Request, Response } from "express";
 import axios from "axios";
 import BlockchainNode from "../../models/classes/BlockchainNode";
 import { NetworkNode } from "../../models/interfaces/Node";
-import {
-  compareNetworkNodes,
-  isThisNodeOrExistsInNetworkNodes,
-} from "../../utils/compareNodes";
-//import NodeCall from "../../models/interfaces/Api";
+import { isThisNodeOrExistsInNetworkNodes } from "../../utils/compareNodes";
 
 function getFullNode(
   logisticsNode: BlockchainNode,

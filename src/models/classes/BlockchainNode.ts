@@ -16,7 +16,7 @@ export default class BlockchainNode {
     this.processAndSend = [];
     this.finalized = [];
     this.nodeUrl = nodeUrl;
-    this.nodeName = nodeName; //enum names, farmer, mill, bakery, store?
+    this.nodeName = nodeName;
     this.networkNodes = [];
   }
 

@@ -1,5 +1,4 @@
 import express from "express";
-const router = express.Router();
 import node from "./node";
 import {
   createAndBroadcastShipment,
@@ -8,6 +7,8 @@ import {
 import { createAndBroadcastNode } from "../controllers/nodeController";
 import { mineAndBroadcastBlock } from "../controllers/blockController";
 import BlockchainNode from "../../models/classes/BlockchainNode";
+
+const router = express.Router();
 
 export default function (logisticsNode: BlockchainNode) {
   router.use("/api/node", node(logisticsNode));

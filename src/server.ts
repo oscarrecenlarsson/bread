@@ -2,6 +2,7 @@ import express from "express";
 import BlockchainNode from "./models/classes/BlockchainNode";
 import network from "./api/routes/network";
 import node from "./api/routes/node";
+
 const app = express();
 
 const PORT = process.argv[2];
@@ -12,7 +13,6 @@ export const logisticsNode = new BlockchainNode(NODEURL, NODENAME);
 
 // middleware
 app.use(express.json());
-
 app.use("/api/network", network(logisticsNode));
 app.use("/api/node", node(logisticsNode));
 

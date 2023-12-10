@@ -298,7 +298,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:3002/api/node/finalized/product/asdf1234"
+						"url": "http://localhost:3003/api/node/finalized/product/asdf1234"
 					},
 					"response": []
 				}
