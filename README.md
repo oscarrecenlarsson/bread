@@ -1,16 +1,16 @@
-# Lia 1
+**Assignment Description:**  
+Create an logistics blockchain where one can follow the journey of bread from the wheat producer to the store.
 
-Skapa en valfri logistikkedja med valfri godtycklig blockkedja
-Exempelvis
+- A farmer harvests wheat.
+- The mill grinds it into flour.
+- The baker bakes bread.
+- The retailer receives the bread.
 
-En bonde skördar vete.
-Kvarnen maler till mjöl
-Bagaren bakar bröd
-Återförsäljare säljer
-Varje led ovan är en användare i vår blockkedja och samtliga delar har en egen kvalitetstämpel “Mjölnaren – Nu har jag tagit emot vetet från bonden och malt vetet till mjöl på det här specifika sättet och satt min egna kvalitetstämpel i den här kedjan”.
+Each link above should be documented in the blockchain.
 
-En kund som köper brödet ska alltså kunna följa brödet tillbaka till bagaren till kvarnen till bonden så kan kunden själv se att detta är en kedja de kan stödja och stå bakom.
+A customer buying the bread should thus be able to trace it back to the baker, to the mill, to the farmer.
+An REST API is provided to set up the network, i.e. add nodes to the network, and to interact with the blockchain, i.e. create shipments, send shipments and mine blocks. 
 
-Instruktioner:
-Kör "npm run all-nodes" för att starta alla servrar, bonden, kvarnen, bagaren och butiken
-Importera Bread.postman_collection.json i mappen postman till Postman för att testa API:t.
+**Instructions:**  
+- Run "npm run all-nodes" to start all servers, the farmer, the mill, the baker, and the shop.
+- Import `Bread.postman_collection.json` from the postman folder into Postman to test the API.
